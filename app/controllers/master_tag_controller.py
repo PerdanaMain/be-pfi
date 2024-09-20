@@ -1,4 +1,5 @@
 from flask import jsonify, make_response
+from sqlalchemy.orm import joinedload
 from app.models.master_tag_model import MasterTag
 
 
@@ -8,7 +9,7 @@ def index():
 
         master_tags_list = [
             {
-                "id": tag.id,
+                "tag_id": tag.id,
                 "web_id": tag.web_id,
                 "name": tag.name,
                 "path": tag.path,
@@ -22,19 +23,6 @@ def index():
                 "step": tag.step,
                 "future": tag.future,
                 "display_digits": tag.display_digits,
-                "tag_values": [
-                    {
-                        "id": value.id,
-                        "time_stamp": value.time_stamp,
-                        "value": value.value,
-                        "units_abbreviation": value.units_abbreviation,
-                        "good": value.good,
-                        "questionable": value.questionable,
-                        "substituted": value.substituted,
-                        "annotated": value.annotated,
-                    }
-                    for value in tag.tag_values
-                ],
             }
             for tag in master_tags
         ]
