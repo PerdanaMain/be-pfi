@@ -1,38 +1,18 @@
 from flask import jsonify, make_response
-from sqlalchemy.orm import joinedload
 from app.models.master_tag_model import MasterTag
+from app.resources.master_tag_resource import tag_resource
 
 
 def index():
     try:
         master_tags = MasterTag.query.all()
-
-        master_tags_list = [
-            {
-                "tag_id": tag.id,
-                "web_id": tag.web_id,
-                "name": tag.name,
-                "path": tag.path,
-                "descriptor": tag.descriptor,
-                "point_class": tag.point_class,
-                "point_type": tag.point_type,
-                "digital_set_name": tag.digital_set_name,
-                "engineering_units": tag.engineering_units,
-                "span": tag.span,
-                "zero": tag.zero,
-                "step": tag.step,
-                "future": tag.future,
-                "display_digits": tag.display_digits,
-            }
-            for tag in master_tags
-        ]
-
+        data = tag_resource(master_tags, relation=False)
         return make_response(
             jsonify(
                 {
                     "status": True,
                     "message": "Master Tags fetched successfully",
-                    "data": master_tags_list,
+                    "data": data,
                 }
             ),
             200,

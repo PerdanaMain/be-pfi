@@ -1,6 +1,9 @@
 from flask import jsonify, make_response, request
 from app.models.value_tag_model import ValueTag
+from app.models.master_tag_model import MasterTag
+from app.resources.master_tag_resource import tag_resource
 from datetime import datetime
+from app import db
 
 
 def search():
@@ -16,42 +19,30 @@ def search():
         start_date = datetime.fromisoformat(start_date)
         end_date = datetime.fromisoformat(end_date)
 
+        query = (
+            db.session.query(MasterTag).join(ValueTag).filter(MasterTag.id.in_(tag_ids))
+        )
+
         if start_date == end_date:
             end_date = end_date.replace(
                 hour=23, minute=59, second=59, microsecond=999999
             )
 
-        value_tags = ValueTag.query.filter(
-            ValueTag.tag_id.in_(tag_ids),
+        query = query.filter(
             ValueTag.time_stamp >= start_date,
             ValueTag.time_stamp <= end_date,
-        ).all()
+        )
 
-        value_tags_list = [
-            {
-                "tag_id": tag.tag_id,
-                "time_stamp": tag.time_stamp,
-                "value": tag.value,
-                "units_abbreviation": tag.units_abbreviation,
-                "good": tag.good,
-                "questionable": tag.questionable,
-                "substituted": tag.substituted,
-                "annotated": tag.annotated,
-            }
-            for tag in value_tags
-        ]
+        tags = query.all()
+
+        data = tag_resource(tags, relation=True)
 
         return make_response(
             jsonify(
                 {
                     "status": True,
                     "message": "Value Tags fetched successfully",
-                    "data": value_tags_list,
-                    "request": {
-                        "tags": tags,
-                        "start_date": start_date,
-                        "end_date": end_date,
-                    },
+                    "data": data,
                 }
             ),
             200,

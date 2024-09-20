@@ -6,4 +6,13 @@ from app.routes import value_tag_route
 
 @app.route(prefix + "/")
 def index():
-    return make_response(jsonify({"message": "Hello, World!"}), 200)
+    return make_response(
+        jsonify(
+            {
+                "status": True,
+                "message": "Welcome to the API",
+                "data": None,
+            }
+        ),
+        200,
+    )
