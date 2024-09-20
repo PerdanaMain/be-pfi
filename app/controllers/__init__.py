@@ -1,0 +1,1 @@
+from app.controllers import master_tag_controller

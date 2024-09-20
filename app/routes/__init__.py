@@ -1,8 +1,6 @@
-from app import app
+from app import app, prefix
 from flask import jsonify, make_response
 from app.routes import tag_route
-
-prefix = "/api/v1"
 
 
 @app.route(prefix + "/")

@@ -13,3 +13,5 @@ prefix = "/api/v1"
 
 
 from app import routes
+from app import models
+from app import controllers
