@@ -6,6 +6,7 @@ from app.routes import equipment_route
 from app.routes import category_route
 from digital_twin_migration.database import db
 from sqlalchemy import text
+from app.services.response import not_found
 
 
 @app.route(prefix + "/")
@@ -34,3 +35,8 @@ def index():
             ),
             200,
         )
+
+
+@app.errorhandler(404)
+def route_not_found(e):
+    return not_found(False, f"Route not found, {e}", None)
