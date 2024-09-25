@@ -17,6 +17,7 @@ gunicorn = "^23.0.0"
 digital-twin-migration = {git = "https://github.com/Cizz22/digital-twin-migration"}
 starlette = "^0.39.0"
 flask-bcrypt = "^1.0.1"
+requests = "^2.32.3"
 
 
 [build-system]

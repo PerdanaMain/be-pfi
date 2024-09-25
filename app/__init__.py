@@ -1,16 +1,19 @@
 from flask import Flask
 from config import Config
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
 from digital_twin_migration.database import db
 
-config = Config()
+# config = Config()
 
 
 app = Flask(__name__)
 CORS(app)
-app.config["SQLALCHEMY_DATABASE_URI"] = config.SQLALCHEMY_DATABASE_URI
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = config.SQLALCHEMY_TRACK_MODIFICATIONS
+# app.config["SQLALCHEMY_DATABASE_URI"] = config.SQLALCHEMY_DATABASE_URI
+# app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = config.SQLALCHEMY_TRACK_MODIFICATIONS
+app.config.from_object(Config)
 db.init_app(app)
+
 prefix = "/api/v1"
 
 

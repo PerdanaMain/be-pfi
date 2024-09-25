@@ -6,6 +6,7 @@ load_dotenv()
 
 class Config:
     PORT = os.getenv("APP_PORT")
+    AUTH_SERVICE_ENDPOINT = os.getenv("AUTH_SERVICE_ENDPOINT")
 
     DB_HOST = os.getenv("DB_HOST")
     DB_NAME = os.getenv("DB_NAME")

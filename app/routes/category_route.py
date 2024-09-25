@@ -1,5 +1,12 @@
 from app import app, prefix
+from app.middlewares.token_verify import token_required
 from app.controllers.master_category_controller import index, create, delete
+
+
+@app.before_request
+@token_required
+def before_request():
+    pass
 
 
 @app.route(prefix + "/categories", methods=["GET"])
