@@ -1,9 +1,7 @@
 def category_resource(category):
-    arr = [
-        {
-            "id": category.id,
-            "name": category.name,
-        }
-    ]
-
-    return arr
+    return {
+        "id": category.id,
+        "name": category.name,
+        "created_at": category.created_at,
+        "updated_at": category.updated_at,
+    }

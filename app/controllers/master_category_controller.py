@@ -2,30 +2,21 @@ from flask import jsonify, make_response, request
 from app.resources.master_category_resource import category_resource
 from digital_twin_migration.models.pfi_app import PFICategory
 from digital_twin_migration.database import Transactional, Propagation
+from app.services.response import success, created, bad_request, not_found
+from app.services.orm.master_category import (
+    get_all_categories,
+    create_category,
+    delete_category,
+)
 
 
 def index():
     try:
-        categories = PFICategory.query.all()
+        data = get_all_categories()
 
-        data = []
-        if len(categories) > 0:
-            for ctg in categories:
-                data.append(category_resource(ctg))
-        else:
-            data = None
-        return make_response(
-            jsonify(
-                {
-                    "status": True,
-                    "message": "Master Category fetched successfully",
-                    "data": data,
-                }
-            ),
-            200,
-        )
+        return success(True, "Master Categories fetched successfully", data)
     except Exception as e:
-        return make_response(jsonify({"error": f"Internal Server Error: {e}"}), 500)
+        return bad_request(False, f"Internal Server Error: {e}", None)
 
 
 @Transactional(propagation=Propagation.REQUIRED)
@@ -36,48 +27,16 @@ def create():
         data = {
             "name": req.get("name"),
         }
-        category = PFICategory(**data)
-        category.save()
-        return make_response(
-            jsonify(
-                {
-                    "status": True,
-                    "message": "Master Category created successfully",
-                    "data": None,
-                }
-            ),
-            200,
-        )
+        create_category(data)
+        return created(True, "Master Category created successfully", None)
     except Exception as e:
-        return make_response(jsonify({"error": f"Internal Server Error: {e}"}), 500)
+        return bad_request(False, f"Internal Server Error: {e}", None)
 
 
 @Transactional(propagation=Propagation.REQUIRED)
 def delete(id):
     try:
-        category = PFICategory.query.filter_by(id=id).first()
-        if category is None:
-            return make_response(
-                jsonify(
-                    {
-                        "status": False,
-                        "message": "Master Category not found",
-                        "data": None,
-                    }
-                ),
-                404,
-            )
-
-        category.delete()
-        return make_response(
-            jsonify(
-                {
-                    "status": True,
-                    "message": "Master Category deleted successfully",
-                    "data": None,
-                }
-            ),
-            200,
-        )
+        delete_category(id)
+        return success(True, "Master Category deleted successfully", id)
     except Exception as e:
-        return make_response(jsonify({"error": f"Internal Server Error: {e}"}), 500)
+        return bad_request(False, f"Internal Server Error: {e}", None)
