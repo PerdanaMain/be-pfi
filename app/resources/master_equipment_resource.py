@@ -12,6 +12,18 @@ def equipment_resource(equipment):
             if equipment.category
             else None
         ),
+        "children": (
+            [
+                {
+                    "id": child.id,
+                    "name": child.name,
+                    "description": child.description,
+                }
+                for child in equipment.children
+            ]
+            if equipment.children
+            else None
+        ),
         "created_at": equipment.created_at,
         "updated_at": equipment.updated_at,
     }
