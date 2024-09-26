@@ -8,19 +8,14 @@ def equipment_resource(equipment):
             {
                 "id": equipment.category.id,
                 "name": equipment.category.name,
+                "created_at": equipment.category.created_at,
+                "updated_at": equipment.category.updated_at,
             }
             if equipment.category
             else None
         ),
         "children": (
-            [
-                {
-                    "id": child.id,
-                    "name": child.name,
-                    "description": child.description,
-                }
-                for child in equipment.children
-            ]
+            [equipment_resource(child) for child in equipment.children]
             if equipment.children
             else None
         ),
