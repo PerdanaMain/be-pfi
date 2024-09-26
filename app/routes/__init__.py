@@ -4,19 +4,21 @@ from app.routes import tag_route, value_tag_route, equipment_route, category_rou
 from digital_twin_migration.database import db
 from sqlalchemy import text
 from app.services.response import not_found
+from config import Config
 
 
 @app.route(prefix + "/")
 def index():
+    print(Config.SQLALCHEMY_DATABASE_URI)
 
     try:
-        db.engine.connect().execute(text("SELECT 1"))
+        conn = db.engine.connect().execute(text("SELECT 1"))
         return make_response(
             jsonify(
                 {
                     "status": True,
                     "message": "Welcome to Digital Twin API",
-                    "data": None,
+                    "data": conn.scalar(),
                 }
             ),
             200,
