@@ -1,21 +1,22 @@
-from flask import jsonify, make_response
-from app.models.master_tag_model import MasterTag
-from app.resources.master_tag_resource import tag_resource
+from app.services.response import success, bad_request
+from app.services.orm.master_tag import get_all_tags
+from app.services.files.read import read_excel
+from app.services.orm.master_tag import mass_insert, exists_tag
 
 
 def index():
     try:
-        master_tags = MasterTag.query.all()
-        data = tag_resource(master_tags, relation=False)
-        return make_response(
-            jsonify(
-                {
-                    "status": True,
-                    "message": "Master Tags fetched successfully",
-                    "data": data,
-                }
-            ),
-            200,
-        )
+        data = get_all_tags()
+        return success(True, "Master Tags retrieved successfully", data)
     except Exception as e:
-        return make_response(jsonify({"error": f"Internal Server Error: {e}"}), 500)
+        return bad_request(False, str(e), None)
+
+
+def insert():
+    try:
+        data = read_excel("API_PI_Tag.xlsx")
+
+        filter_data = [tag for tag in data if exists_tag(tag["web_id"]) is None]
+        return success(True, "Master Tags inserted successfully", filter_data)
+    except Exception as e:
+        return bad_request(False, str(e), None)

@@ -18,6 +18,8 @@ digital-twin-migration = {git = "https://github.com/Cizz22/digital-twin-migratio
 starlette = "^0.39.0"
 flask-bcrypt = "^1.0.1"
 requests = "^2.32.3"
+pandas = "^2.2.3"
+openpyxl = "^3.1.5"
 
 
 [build-system]
