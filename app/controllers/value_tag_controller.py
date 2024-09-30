@@ -2,6 +2,7 @@ from flask import request
 from app.services.response import success, bad_request, not_found
 from app.services.orm.master_tag import get_tag_values_by_date
 from app.services.orm.tag_value import create_many
+from app.services.format_to_gmt import format_to_gmt
 from datetime import datetime
 
 
@@ -40,6 +41,9 @@ def mass_insert():
 
         if not data:
             return bad_request(False, "Data is required", None)
+
+        for d in data:
+            d["time_stamp"] = format_to_gmt(d["time_stamp"][:19])
 
         create_many(data)
         return success(True, "Value tag created successfully", None)

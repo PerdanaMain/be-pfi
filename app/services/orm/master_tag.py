@@ -46,7 +46,6 @@ def get_tag_values_by_date(tags, start_date, end_date):
 
         return data
     except Exception as e:
-        # Tangani exception saat query dijalankan
         print(f"Error querying tags: {str(e)}")
         return None
 
