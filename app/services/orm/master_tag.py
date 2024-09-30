@@ -22,13 +22,13 @@ def exists_tag(web_id):
 
 
 def get_tag_values_by_date(tags, start_date, end_date):
-    query = (
-        db.session.query(PFIMasterTag)
-        .join(PFIValueTag)
-        .filter(PFIMasterTag.id.in_(tags))
-    )
+    try:
+        query = (
+            db.session.query(PFIMasterTag)
+            .join(PFIValueTag)
+            .filter(PFIMasterTag.id.in_(tags))
+        )
 
-    if start_date and end_date:
         if start_date == end_date:
             end_date = end_date.replace(
                 hour=23, minute=59, second=59, microsecond=999999
@@ -39,23 +39,24 @@ def get_tag_values_by_date(tags, start_date, end_date):
             PFIValueTag.time_stamp <= end_date,
         )
 
-    tag_values = query.all()
+        tag_values = query.all()
 
-    if tag_values:
-        data = [tag_resource(tag) for tag in tag_values]
-    else:
-        data = None
+        data = [tag_resource(tag) for tag in tag_values] if tag_values else None
 
-    return data
-
+        return data
+    except Exception as e:
+        # Tangani exception saat query dijalankan
+        print(f"Error querying tags: {str(e)}")
+        return None
 
 @Transactional(propagation=Propagation.REQUIRED)
-def mass_insert(data):
+def create_many(data):
     try:
-        # for tag in data:
-        #     tag = PFIMasterTag(**tag)
-        #     tag.save()
+        new_tag = PFIMasterTag(**data)
+        db.session.add(new_tag)
 
+        db.session.commit()
+                
         return True
     except:
         return False
