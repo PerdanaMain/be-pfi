@@ -40,6 +40,7 @@ def get_tag_values_by_date(tags, start_date, end_date):
         )
 
         tag_values = query.all()
+        print(tag_values)
 
         data = [tag_resource(tag) for tag in tag_values] if tag_values else None
 
@@ -49,6 +50,7 @@ def get_tag_values_by_date(tags, start_date, end_date):
         print(f"Error querying tags: {str(e)}")
         return None
 
+
 @Transactional(propagation=Propagation.REQUIRED)
 def create_many(data):
     try:
@@ -56,7 +58,7 @@ def create_many(data):
         db.session.add(new_tag)
 
         db.session.commit()
-                
+
         return True
     except:
         return False

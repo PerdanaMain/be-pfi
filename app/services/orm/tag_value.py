@@ -1,4 +1,4 @@
-from digital_twin_migration.models.pfi_app import PFIMasterTag
+from digital_twin_migration.models.pfi_app import PFIMasterTag, PFIValueTag
 from app.resources.master_tag_resource import tag_resource
 from digital_twin_migration.database import Transactional, Propagation
 
@@ -13,3 +13,14 @@ def get_tag_values_by_date(start_date, end_date):
         data = None
 
     return data
+
+
+@Transactional(propagation=Propagation.REQUIRED)
+def create_many(data):
+    try:
+        for item in data:
+            tag = PFIValueTag(**item)
+            tag.save()
+        return None
+    except:
+        return "Internal Server Error: Unable to create tags"
