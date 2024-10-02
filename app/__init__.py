@@ -1,7 +1,6 @@
 from flask import Flask
 from config import Config
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
 from digital_twin_migration.database import db
 from dotenv import load_dotenv
 
