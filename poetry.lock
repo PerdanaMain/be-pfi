@@ -229,7 +229,7 @@ files = [
 
 [[package]]
 name = "digital-twin-migration"
-version = "1.1.3"
+version = "1.1.8"
 description = ""
 optional = false
 python-versions = ">=3.8"
@@ -243,7 +243,7 @@ dev = ["Sphinx (>=4.3.0,<7.1.0)", "black (>=23.0,<24.0)", "build", "furo (==2023
 type = "git"
 url = "https://github.com/Cizz22/digital-twin-migration"
 reference = "HEAD"
-resolved_reference = "242522a2b1a65dad86d5d2a2bb9d25487f6fc9c5"
+resolved_reference = "ba613f1952e03dc8caaecf4835c9faf8d61d1bc1"
 
 [[package]]
 name = "et-xmlfile"
