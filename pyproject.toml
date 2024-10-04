@@ -19,7 +19,7 @@ flask-bcrypt = "^1.0.1"
 requests = "^2.32.3"
 pandas = "^2.2.3"
 openpyxl = "^3.1.5"
-digital-twin-db-migration = {git = "https://github.com/PerdanaMain/digital-twin-db-migration"}
+digital-twin-db-migration = {git = "https://github.com/PerdanaMain/digital-twin-db-migration", branch="main"}
 
 
 [build-system]
