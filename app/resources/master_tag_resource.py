@@ -1,4 +1,4 @@
-def tag_resource(tag):
+def tag_resource(tag, tag_values=False, tag_values_interpolated=False):
     return {
         "id": tag.id,
         "web_id": tag.web_id,
@@ -14,17 +14,4 @@ def tag_resource(tag):
         "step": tag.step,
         "future": tag.future,
         "display_digits": tag.display_digits,
-        "values": (
-            [
-                {
-                    "id": value.id,
-                    "tag_id": value.tag_id,
-                    "time_stamp": value.time_stamp,
-                    "value": value.value,
-                }
-                for value in tag.tag_values
-            ]
-            if tag.tag_values
-            else None
-        ),
     }

@@ -5,15 +5,20 @@ from digital_twin_migration.database import db
 
 
 def get_all_tags():
-    tags = PFIMasterTag.query.all()
-    data = []
-    if len(tags) > 0:
-        for tag in tags:
-            data.append(tag_resource(tag))
-    else:
-        data = None
+    try:
+        tags = PFIMasterTag.query.all()
+        data = []
+        if len(tags) > 0:
+            for tag in tags:
+                data.append(
+                    tag_resource(tag, tag_values=False, tag_values_interpolated=False)
+                )
+        else:
+            data = None
 
-    return data
+        return data
+    except Exception as e:
+        print("An exception occurred :", str(e))
 
 
 def exists_tag(web_id):
@@ -42,7 +47,14 @@ def get_tag_values_by_date(tags, start_date, end_date):
         tag_values = query.all()
         print(tag_values)
 
-        data = [tag_resource(tag) for tag in tag_values] if tag_values else None
+        data = (
+            [
+                tag_resource(tag, tag_values=True, tag_values_interpolated=False)
+                for tag in tag_values
+            ]
+            if tag_values
+            else None
+        )
 
         return data
     except Exception as e:
