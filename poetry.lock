@@ -89,6 +89,24 @@ optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
 
 [[package]]
+name = "digital-twin-migration"
+version = "1.1.8"
+description = ""
+category = "main"
+optional = false
+python-versions = ">=3.8"
+develop = false
+
+[package.extras]
+dev = ["ruff", "mypy (>=1.0,<1.5)", "black (>=23.0,<24.0)", "isort (>=5.12,<5.13)", "pytest", "pytest-sphinx", "pytest-cov", "twine (>=1.11.0)", "build", "setuptools", "wheel", "Sphinx (>=4.3.0,<7.1.0)", "furo (==2023.7.26)", "myst-parser (>=1.0,<2.1)", "sphinx-copybutton (==0.5.2)", "sphinx-autobuild (==2021.3.14)", "sphinx-autodoc-typehints (==1.23.3)", "packaging"]
+
+[package.source]
+type = "git"
+url = "https://github.com/PerdanaMain/digital-twin-db-migration/"
+reference = "main"
+resolved_reference = "5182f88cecb4bce1795b06f37278ad0b63a1b239"
+
+[[package]]
 name = "et-xmlfile"
 version = "1.1.0"
 description = "An implementation of lxml.xmlfile for the standard library"
@@ -501,7 +519,7 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "2e1950ac9fac873e1e4c08309c540ebcad55c623f6e2216f64426b3947d2e100"
+content-hash = "c5b5f275ab314413b3738a1a1d8f841bbec27b593e236d01343d22a5ca8fe7e1"
 
 [metadata.files]
 alembic = []
@@ -512,6 +530,7 @@ certifi = []
 charset-normalizer = []
 click = []
 colorama = []
+digital-twin-migration = []
 et-xmlfile = []
 exceptiongroup = []
 flask = []
