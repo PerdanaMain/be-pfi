@@ -4,9 +4,9 @@ from digital_twin_migration.database import Transactional, Propagation
 from digital_twin_migration.database import db
 
 
-def get_all_tags():
+def get_all_tags(limit):
     try:
-        tags = PFIMasterTag.query.all()
+        tags = PFIMasterTag.query.limit(limit).all()
         data = []
         if len(tags) > 0:
             for tag in tags:
@@ -49,7 +49,7 @@ def get_tag_values_by_date(tags, start_date, end_date):
 
         data = (
             [
-                tag_resource(tag, tag_values=True, tag_values_interpolated=False)
+                tag_resource(tag, tag_values=False, tag_values_interpolated=False)
                 for tag in tag_values
             ]
             if tag_values

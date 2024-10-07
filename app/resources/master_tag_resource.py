@@ -1,3 +1,6 @@
+from app.resources.tag_values_resource import tag_values_resource
+
+
 def tag_resource(tag, tag_values=False, tag_values_interpolated=False):
     return {
         "id": tag.id,
@@ -14,4 +17,9 @@ def tag_resource(tag, tag_values=False, tag_values_interpolated=False):
         "step": tag.step,
         "future": tag.future,
         "display_digits": tag.display_digits,
+        "tag_values": (
+            [tag_values_resource(tag_value) for tag_value in tag.tag_values]
+            if tag_values
+            else None
+        ),
     }
