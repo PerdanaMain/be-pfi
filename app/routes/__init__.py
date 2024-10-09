@@ -1,6 +1,6 @@
 from app import app, prefix
 from flask import jsonify, make_response
-from app.routes import tag_route, value_tag_route, equipment_route, category_route
+from app.routes import equipment_route, category_route, eq_tree_route
 from digital_twin_migration.database import db
 from sqlalchemy import text
 from app.services.response import not_found

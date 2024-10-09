@@ -229,7 +229,7 @@ files = [
 
 [[package]]
 name = "digital-twin-migration"
-version = "1.1.8"
+version = "1.1.15"
 description = ""
 optional = false
 python-versions = ">=3.8"
@@ -241,9 +241,9 @@ dev = ["Sphinx (>=4.3.0,<7.1.0)", "black (>=23.0,<24.0)", "build", "furo (==2023
 
 [package.source]
 type = "git"
-url = "https://github.com/PerdanaMain/digital-twin-db-migration/"
-reference = "main"
-resolved_reference = "5182f88cecb4bce1795b06f37278ad0b63a1b239"
+url = "https://github.com/Cizz22/digital-twin-migration/"
+reference = "HEAD"
+resolved_reference = "0b9737e0418a84f7fcb2b08e6125d6ed938709a0"
 
 [[package]]
 name = "et-xmlfile"
@@ -1088,4 +1088,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "c5b5f275ab314413b3738a1a1d8f841bbec27b593e236d01343d22a5ca8fe7e1"
+content-hash = "ba49b257caecee7936684f7607304f8d3dc62139c066594f49b29048cbf612f9"

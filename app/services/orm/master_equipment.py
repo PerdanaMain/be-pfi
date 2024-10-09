@@ -57,9 +57,7 @@ def update_equipment(id, data):
 def delete_equipment(id):
     try:
         equipment = PFIEquipment.query.filter_by(id=id).first()
-
-        if not equipment:
-            return not_found(False, "Master Equipment not found", None)
+        print(equipment)
 
         db.session.delete(equipment)
         db.session.commit()

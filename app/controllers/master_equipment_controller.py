@@ -67,6 +67,11 @@ def update(id):
 
 def delete(id):
     try:
+        equipment = get_equipment_by_id(id)
+
+        if not equipment:
+            return bad_request(False, "Master Equipment not found", None)
+
         delete_equipment(id)
 
         return success(True, "Master Equipment deleted successfully", None)
