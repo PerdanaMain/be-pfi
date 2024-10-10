@@ -3,7 +3,6 @@ def equipment_resource(equipment):
         "id": equipment.id,
         "parent_id": equipment.parent_id,
         "name": equipment.name,
-        "description": equipment.description,
         "category": (
             {
                 "id": equipment.category.id,

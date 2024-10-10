@@ -25,8 +25,11 @@ def create():
         data = {
             "name": req.get("name"),
             "parent_id": req.get("parent_id") if req.get("parent_id") else None,
-            "description": req.get("description"),
             "category_id": req.get("category_id"),
+            "equipment_tree_id": req.get("equipment_tree_id"),
+            "system_tag": req.get("system_tag"),
+            "location_tag": req.get("location_tag"),
+            "assetnum": req.get("assetnum"),
         }
         create_equipment(data)
 
@@ -50,9 +53,12 @@ def update(id):
 
         data = {
             "name": req.get("name"),
-            "parent_id": req.get("parent_id", None),
-            "description": req.get("description"),
+            "parent_id": req.get("parent_id") if req.get("parent_id") else None,
             "category_id": req.get("category_id"),
+            "equipment_tree_id": req.get("equipment_tree_id"),
+            "system_tag": req.get("system_tag"),
+            "location_tag": req.get("location_tag"),
+            "assetnum": req.get("assetnum"),
         }
         data = {key: value for key, value in data.items() if value is not None}
 

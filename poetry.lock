@@ -243,7 +243,7 @@ dev = ["Sphinx (>=4.3.0,<7.1.0)", "black (>=23.0,<24.0)", "build", "furo (==2023
 type = "git"
 url = "https://github.com/Cizz22/digital-twin-migration/"
 reference = "HEAD"
-resolved_reference = "5c9ff944bca66fb6b9ca81d1c6d696953a171d1a"
+resolved_reference = "9d1b3230ec1caae6372bbb7f6d0bf62217b07d34"
 
 [[package]]
 name = "et-xmlfile"
