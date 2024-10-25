@@ -1,28 +1,36 @@
 from digital_twin_migration.models.pfi_app import PFIEquipment
 from digital_twin_migration.database import Transactional, Propagation
 from digital_twin_migration.database import db
-from app.resources.master_equipment_resource import equipment_resource
+from app.resources.master_equipment_resource import equipment_resource, paginate
 from app.services.response import not_found
 
 
-def get_all_equipments():
-    equipments = PFIEquipment.query.filter_by(parent_id=None).all()
+def get_all_equipments(page, limit):
+    offset = (page - 1) * limit
+    equipments = PFIEquipment.query.filter_by(parent_id=None).limit(limit).offset(offset).all()
     data = []
     if len(equipments) > 0:
         for eq in equipments:
             data.append(equipment_resource(eq))
     else:
-        data = None
+        data = []
 
-    return data
+    return paginate(data, page, limit)
 
 
-def get_equipment_by_id(id):
-    equipment = PFIEquipment.query.filter_by(id=id).first()
-    if equipment:
-        return equipment_resource(equipment)
+def get_equipment_by_id(id,page, limit):
+    offset = (page - 1) * limit
+    equipments = PFIEquipment.query.filter_by(parent_id=id).limit(limit).offset(offset).all()
+
+
+    data = []
+    print(len(data))
+    if len(equipments) > 0:
+        for eq in equipments:
+            data.append(equipment_resource(eq))
     else:
-        return None
+        data = []
+    return paginate(data, page, limit)
 
 
 @Transactional(propagation=Propagation.REQUIRED)

@@ -11,7 +11,11 @@ from app.services.orm.master_equipment import (
 
 def index():
     try:
-        data = get_all_equipments()
+        # requests
+        page = request.args.get("page", default=1, type=int)
+        limit = request.args.get("limit", default=10, type=int)
+
+        data = get_all_equipments(page=page, limit=limit)
 
         return success(True, "Master Equipment fetched successfully", data)
     except Exception as e:
@@ -40,7 +44,11 @@ def create():
 
 def show(id):
     try:
-        data = get_equipment_by_id(id)
+        # requests
+        page = request.args.get("page", default=1, type=int)
+        limit = request.args.get("limit", default=10, type=int)
+
+        data = get_equipment_by_id(id, page=page, limit=limit)
 
         return success(True, "Master Equipment fetched successfully", data)
     except Exception as e:

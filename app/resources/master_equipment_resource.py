@@ -27,11 +27,28 @@ def equipment_resource(equipment):
             if equipment.equipment_tree
             else None
         ),
-        "children": (
-            [equipment_resource(child) for child in equipment.children]
-            if equipment.children
-            else None
-        ),
+        # "children": (
+        #     [equipment_resource(child) for child in equipment.children]
+        #     if equipment.children
+        #     else None
+        # ),
         "created_at": equipment.created_at,
         "updated_at": equipment.updated_at,
+    }
+
+def paginate(data, page, per_page):
+    total_items = len(data)
+    total_pages = (total_items + per_page - 1) // per_page 
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_data = data[start:end]
+    
+    return {
+        "quipments": paginated_data,
+        "pagination": {
+            "total_items": total_items,
+            "total_pages": total_pages,
+            "current_page": page,
+            "limit": per_page
+        }
     }
