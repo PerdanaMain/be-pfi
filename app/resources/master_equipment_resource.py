@@ -44,7 +44,7 @@ def paginate(data, page, per_page):
     paginated_data = data[start:end]
     
     return {
-        "quipments": paginated_data,
+        "equipments": paginated_data,
         "pagination": {
             "total_items": total_items,
             "total_pages": total_pages,
