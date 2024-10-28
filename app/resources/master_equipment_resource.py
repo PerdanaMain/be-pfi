@@ -27,11 +27,16 @@ def equipment_resource(equipment):
             if equipment.equipment_tree
             else None
         ),
-        # "children": (
-        #     [equipment_resource(child) for child in equipment.children]
-        #     if equipment.children
-        #     else None
-        # ),
+        "parent": (
+            {
+                "id": equipment.parent.id,
+                "name": equipment.parent.name,
+                "created_at": equipment.parent.created_at,
+                "updated_at": equipment.parent.updated_at,
+            }
+            if equipment.parent
+            else None
+        ),
         "created_at": equipment.created_at,
         "updated_at": equipment.updated_at,
     }
