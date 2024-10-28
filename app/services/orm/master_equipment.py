@@ -26,7 +26,7 @@ def get_equipment_by_id(id, page, limit):
         PFIEquipment.query.filter_by(parent_id=id).limit(limit).offset(offset).all()
     )
 
-    print(len(data))
+    data = []
     if len(equipments) > 0:
         for eq in equipments:
             data.append(equipment_resource(eq))
