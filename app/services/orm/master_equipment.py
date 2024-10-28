@@ -7,7 +7,9 @@ from app.services.response import not_found
 
 def get_all_equipments(page, limit):
     offset = (page - 1) * limit
-    equipments = PFIEquipment.query.filter_by(parent_id=None).limit(limit).offset(offset).all()
+    equipments = (
+        PFIEquipment.query.filter_by(parent_id=None).limit(limit).offset(offset).all()
+    )
     data = []
     if len(equipments) > 0:
         for eq in equipments:
@@ -18,12 +20,12 @@ def get_all_equipments(page, limit):
     return paginate(data, page, limit)
 
 
-def get_equipment_by_id(id,page, limit):
+def get_equipment_by_id(id, page, limit):
     offset = (page - 1) * limit
-    equipments = PFIEquipment.query.filter_by(parent_id=id).limit(limit).offset(offset).all()
+    equipments = (
+        PFIEquipment.query.filter_by(parent_id=id).limit(limit).offset(offset).all()
+    )
 
-
-    data = []
     print(len(data))
     if len(equipments) > 0:
         for eq in equipments:
@@ -65,7 +67,9 @@ def update_equipment(id, data):
 def delete_equipment(id):
     try:
         equipment = PFIEquipment.query.filter_by(id=id).first()
-        print(equipment)
+
+        if not equipment:
+            return not_found(False, "Master Equipment not found", None)
 
         db.session.delete(equipment)
         db.session.commit()
