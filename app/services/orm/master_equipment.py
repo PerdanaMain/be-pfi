@@ -35,6 +35,21 @@ def get_equipment_by_id(id, page, limit):
     return paginate(data, page, limit)
 
 
+def get_equipment_by_params(name, page, limit):
+    offset = (page - 1) * limit
+    equipment = (
+        PFIEquipment.query.filter(PFIEquipment.name.ilike(f"%{name}%"))
+        .limit(limit)
+        .offset(offset)
+        .first()
+    )
+
+    if equipment:
+        return equipment
+    else:
+        return None
+
+
 @Transactional(propagation=Propagation.REQUIRED)
 def create_equipment(data):
     try:

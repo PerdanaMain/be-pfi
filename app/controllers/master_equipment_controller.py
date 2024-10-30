@@ -3,6 +3,7 @@ from app.services.response import success, created, bad_request
 from app.services.orm.master_equipment import (
     get_all_equipments,
     get_equipment_by_id,
+    get_equipment_by_params,
     create_equipment,
     update_equipment,
     delete_equipment,
@@ -51,6 +52,26 @@ def show(id):
         data = get_equipment_by_id(id, page=page, limit=limit)
 
         return success(True, "Master Equipment fetched successfully", data)
+    except Exception as e:
+        return bad_request(False, f"Internal Server Error: {e}", None)
+
+
+def search():
+    try:
+        parent = request.args.get("parent", type=str)
+        page = request.args.get("page", default=1, type=int)
+        limit = request.args.get("limit", default=10, type=int)
+
+        equipment = get_equipment_by_params(name=parent, page=page, limit=limit)
+
+        if not equipment:
+            return bad_request(False, "Master Equipment not found", None)
+
+        print(equipment)
+        data = get_equipment_by_id(equipment.id, page=page, limit=limit)
+
+        return success(True, "Master Equipment fetched successfully", data)
+
     except Exception as e:
         return bad_request(False, f"Internal Server Error: {e}", None)
 

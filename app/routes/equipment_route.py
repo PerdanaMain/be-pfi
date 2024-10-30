@@ -6,6 +6,7 @@ from app.controllers.master_equipment_controller import (
     show,
     update,
     delete,
+    search,
 )
 
 
@@ -17,6 +18,11 @@ def get_equipments():
 @app.route(prefix + "/equipments", methods=["POST"])
 def create_equipment():
     return create()
+
+
+@app.route(prefix + "/equipment", methods=["GET"])
+def get_equipment():
+    return search()
 
 
 @app.route(prefix + "/equipment/<uuid:id>", methods=["GET", "PUT", "DELETE"])

@@ -25,7 +25,9 @@ def index():
                 {
                     "status": True,
                     "message": "Welcome to Digital Twin API",
-                    "data": conn.scalar(),
+                    "data": (
+                        "DB Connected" if conn.rowcount == 1 else "DB Not Connected"
+                    ),
                 }
             ),
             200,
