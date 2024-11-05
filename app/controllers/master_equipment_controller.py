@@ -8,7 +8,7 @@ from app.services.orm.master_equipment import (
     update_equipment,
     delete_equipment,
 )
-from app.services.models.tag_model import get_selected_tags
+from app.services.models.tag_model import get_selected_tags, get_psd_values
 
 
 def index():
@@ -33,6 +33,15 @@ def tag_index():
         data = get_selected_tags(3865, 3866, 3871, 3870, page=page, limit=limit)
         print(data)
         return success(True, "Selected Tags Data fetched successfully", data)
+    except Exception as e:
+        return bad_request(False, f"Internal Server Error: {e}", None)
+
+
+def tag_psd_values(tag_id):
+    try:
+        data = get_psd_values(tag_id)
+
+        return success(True, "PSD Values fetched successfully", data)
     except Exception as e:
         return bad_request(False, f"Internal Server Error: {e}", None)
 

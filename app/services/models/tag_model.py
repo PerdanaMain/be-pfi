@@ -48,3 +48,46 @@ def get_selected_tags(*tag, page=1, limit=10):
         },
         "tags": [tag_resource(tag, columns) for tag in tags],
     }
+
+
+def get_psd_values(tag_id):
+    conn = get_fetch_connection()
+    cursor = conn.cursor()
+
+    query = """
+        SELECT 
+            dl_psd_value.tag_id AS tag_id,
+            dl_psd_value.created_at AS timestamp,
+            dl_psd_value.psd_value AS value,
+            dl_ms_tag.name AS tag_name,
+            dl_ms_tag.descriptor AS tag_description
+        FROM dl_psd_value
+        JOIN dl_ms_tag ON dl_psd_value.tag_id = dl_ms_tag.id
+        WHERE dl_psd_value.tag_id = %s
+        """
+    cursor.execute(query, (tag_id,))
+    columns = [col[0] for col in cursor.description]
+    psd_values = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    # Membuat array psd_values hanya dengan timestamp dan value
+    filtered_psd_values = [
+        {
+            "timestamp": psd_value[columns.index("timestamp")],
+            "value": psd_value[columns.index("value")],
+        }
+        for psd_value in psd_values
+    ]
+
+    return {
+        "psd_values": filtered_psd_values,
+        "tag": {
+            "id": psd_values[0][columns.index("tag_id")] if psd_values else None,
+            "name": psd_values[0][columns.index("tag_name")] if psd_values else None,
+            "description": (
+                psd_values[0][columns.index("tag_description")] if psd_values else None
+            ),
+        },
+    }

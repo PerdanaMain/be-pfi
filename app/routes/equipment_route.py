@@ -9,6 +9,7 @@ from app.controllers.master_equipment_controller import (
     delete,
     search,
     tag_index,
+    tag_psd_values,
 )
 
 
@@ -22,6 +23,12 @@ def get_equipments():
 @app.route(prefix + "/selected-tags", methods=["GET"])
 def get_selected_tags():
     return tag_index()
+
+
+@token_required
+@app.route(prefix + "/psd-values/<int:id>", methods=["GET"])
+def get_psd(id):
+    return tag_psd_values(id)
 
 
 @token_required
