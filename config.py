@@ -14,6 +14,12 @@ class Config:
     DB_PASSWORD = os.getenv("DB_PASSWORD")
     DB_PORT = os.getenv("DB_PORT", 5432)
 
+    DB_FETCH_HOST = os.getenv("DB_FETCH_HOST")
+    DB_FETCH_NAME = os.getenv("DB_FETCH_NAME")
+    DB_FETCH_USERNAME = os.getenv("DB_FETCH_USERNAME")
+    DB_FETCH_PASSWORD = os.getenv("DB_FETCH_PASSWORD")
+    DB_FETCH_PORT = os.getenv("DB_FETCH_PORT", 5432)
+
     SQLALCHEMY_DATABASE_URI = f"postgresql+psycopg2://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False

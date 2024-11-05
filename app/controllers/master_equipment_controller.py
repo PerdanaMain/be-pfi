@@ -8,6 +8,7 @@ from app.services.orm.master_equipment import (
     update_equipment,
     delete_equipment,
 )
+from app.services.models.tag_model import get_selected_tags
 
 
 def index():
@@ -19,6 +20,19 @@ def index():
         data = get_all_equipments(page=page, limit=limit)
 
         return success(True, "Master Equipment fetched successfully", data)
+    except Exception as e:
+        return bad_request(False, f"Internal Server Error: {e}", None)
+
+
+def tag_index():
+    try:
+        # requests
+        page = request.args.get("page", default=1, type=int)
+        limit = request.args.get("limit", default=10, type=int)
+
+        data = get_selected_tags(3865, 3866, 3871, 3870, page=page, limit=limit)
+        print(data)
+        return success(True, "Selected Tags Data fetched successfully", data)
     except Exception as e:
         return bad_request(False, f"Internal Server Error: {e}", None)
 

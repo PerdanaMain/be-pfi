@@ -5,13 +5,6 @@ from digital_twin_migration.database import db
 from sqlalchemy import text
 from app.services.response import not_found
 from config import Config
-from app.middlewares.token_verify import token_required
-
-
-@app.before_request
-@token_required
-def before_request():
-    pass
 
 
 @app.route(prefix + "/")
