@@ -8,7 +8,11 @@ from app.services.orm.master_equipment import (
     update_equipment,
     delete_equipment,
 )
-from app.services.models.tag_model import get_selected_tags, get_psd_values
+from app.services.models.tag_model import (
+    get_selected_tags,
+    get_psd_values,
+    get_all_tags,
+)
 
 
 def index():
@@ -25,6 +29,20 @@ def index():
 
 
 def tag_index():
+    try:
+        # requests
+        page = request.args.get("page", default=1, type=int)
+        limit = request.args.get("limit", default=10, type=int)
+
+        data = get_all_tags(page=page, limit=limit)
+
+        return success(True, "Tags Data fetched successfully", data)
+    except Exception as e:
+        print(f"An exception occurred: {e}")
+    pass
+
+
+def selected_tag():
     try:
         # requests
         page = request.args.get("page", default=1, type=int)

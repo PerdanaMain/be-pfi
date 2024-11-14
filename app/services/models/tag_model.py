@@ -2,6 +2,42 @@ from app.config.database import get_fetch_connection
 from app.resources.master_tag_resource import tag_resource
 
 
+def get_all_tags(page=1, limit=10):
+    conn = get_fetch_connection()
+    cursor = conn.cursor()
+
+    # Hitung total tag
+    total_query = "SELECT COUNT(*) FROM dl_ms_tag"
+    cursor.execute(total_query)
+    total_count = cursor.fetchone()[0]
+
+    # Query untuk mendapatkan tag dengan paginasi
+    query = "SELECT * FROM dl_ms_tag LIMIT %s OFFSET %s"
+    offset = (page - 1) * limit
+    cursor.execute(query, (limit, offset))
+
+    # Mendapatkan nama kolom
+    columns = [col[0] for col in cursor.description]
+
+    # Mendapatkan hasil dari query
+    tags = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    # Mengonversi setiap tuple menjadi dictionary
+    return {
+        "pagination": {
+            "total": total_count,
+            "page": page,
+            "limit": limit,
+            "total_pages": (total_count // limit)
+            + (1 if total_count % limit > 0 else 0),
+        },
+        "tags": [tag_resource(tag, columns) for tag in tags],
+    }
+
+
 def get_selected_tags(*tag, page=1, limit=10):
     conn = get_fetch_connection()
     cursor = conn.cursor()
