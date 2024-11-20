@@ -100,7 +100,6 @@ def get_predicted_values(tag_id):
 
     query = """
         SELECT 
-            dl_predict_tag.tag_id AS tag_id,
             dl_predict_tag.created_at AS timestamp,
             dl_predict_tag.value AS value
         FROM dl_predict_tag
@@ -114,7 +113,9 @@ def get_predicted_values(tag_id):
     conn.close()
 
     return {
-        "predicted_values": predicted_values,
+        "predicted_values": [
+            tag_value_resource(tag_value, columns) for tag_value in predicted_values
+        ],
     }
 
 
