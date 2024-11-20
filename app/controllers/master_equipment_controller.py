@@ -12,6 +12,7 @@ from app.services.models.tag_model import (
     get_selected_tags,
     get_psd_values,
     get_all_tags,
+    get_tag_by_id,
 )
 
 
@@ -38,8 +39,16 @@ def tag_index():
 
         return success(True, "Tags Data fetched successfully", data)
     except Exception as e:
-        print(f"An exception occurred: {e}")
-    pass
+        return bad_request(False, f"Internal Server Error: {e}", None)
+
+
+def tag_by_id(id):
+    try:
+        data = get_tag_by_id(id)
+
+        return success(True, "Tag Data fetched successfully", data)
+    except Exception as e:
+        return bad_request(False, f"Internal Server Error: {e}", None)
 
 
 def selected_tag():

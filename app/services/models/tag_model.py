@@ -1,5 +1,5 @@
 from app.config.database import get_fetch_connection
-from app.resources.master_tag_resource import tag_resource
+from app.resources.master_tag_resource import tag_resource, tag_value_resource
 
 
 def get_all_tags(page=1, limit=10):
@@ -35,6 +35,86 @@ def get_all_tags(page=1, limit=10):
             + (1 if total_count % limit > 0 else 0),
         },
         "tags": [tag_resource(tag, columns) for tag in tags],
+    }
+
+
+def get_tag_by_id(tag_id):
+    conn = get_fetch_connection()
+    cursor = conn.cursor()
+
+    # Hitung total tag
+    query = """
+        SELECT * FROM dl_ms_tag WHERE id = %s
+        """
+
+    cursor.execute(query, (tag_id,))
+    # Mendapatkan nama kolom
+    columns = [col[0] for col in cursor.description]
+
+    # Mendapatkan hasil dari query
+    tag = cursor.fetchone()
+    print(tag)
+
+    cursor.close()
+    conn.close()
+
+    # Mengonversi setiap tuple menjadi dictionary
+    return {
+        "tag": tag_resource(tag, columns) if tag else None,
+    }
+
+
+def get_tag_values(tag_id):
+    conn = get_fetch_connection()
+    cursor = conn.cursor()
+
+    query = """
+        SELECT 
+            dl_value_tag.time_stamp AS timestamp,
+            dl_value_tag.value AS value
+        FROM dl_value_tag
+        WHERE dl_value_tag.tag_id = %s
+        """
+    cursor.execute(query, (tag_id,))
+    columns = [col[0] for col in cursor.description]
+    tag_values = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    tag = get_tag_by_id(tag_id)
+    predict = get_predicted_values(tag_id)
+
+    return {
+        "tag": tag["tag"],
+        "tag_values": [
+            tag_value_resource(tag_value, columns) for tag_value in tag_values
+        ],
+        "predicted_values": predict["predicted_values"],
+    }
+
+
+def get_predicted_values(tag_id):
+    conn = get_fetch_connection()
+    cursor = conn.cursor()
+
+    query = """
+        SELECT 
+            dl_predict_tag.tag_id AS tag_id,
+            dl_predict_tag.created_at AS timestamp,
+            dl_predict_tag.value AS value
+        FROM dl_predict_tag
+        WHERE dl_predict_tag.tag_id = %s
+        """
+    cursor.execute(query, (tag_id,))
+    columns = [col[0] for col in cursor.description]
+    predicted_values = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return {
+        "predicted_values": predicted_values,
     }
 
 

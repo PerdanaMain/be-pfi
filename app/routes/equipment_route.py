@@ -11,6 +11,7 @@ from app.controllers.master_equipment_controller import (
     selected_tag,
     tag_index,
     tag_psd_values,
+    tag_by_id,
 )
 
 
@@ -24,6 +25,12 @@ def get_equipments():
 @app.route(prefix + "/selected-tags", methods=["GET"])
 def get_selected_tags():
     return selected_tag()
+
+
+@token_required
+@app.route(prefix + "/tag/<int:id>", methods=["GET"])
+def get_tag(id):
+    return tag_by_id(id)
 
 
 @token_required
