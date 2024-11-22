@@ -21,7 +21,7 @@ def index():
         return bad_request(False, f"Internal Server Error: {e}", None)
 
 
-def stream_tag_value(tag_id):
+def stream_tag_value(tag_id, size):
     """
     Fungsi generator untuk streaming data dari database.
     """
@@ -29,7 +29,7 @@ def stream_tag_value(tag_id):
         # Ambil data dari database
         data = get_tag_values(tag_id)
 
-        batch_size = 500  # Kirim data dalam batch
+        batch_size = size
         total_data = len(data)
 
         for start in range(0, total_data, batch_size):
@@ -48,7 +48,7 @@ def stream_tag_value(tag_id):
         yield f"data: {json.dumps(error_data)}\n\n"
 
 
-def stream_tag_prediction_value(tag_id):
+def stream_tag_prediction_value(tag_id,size):
     """
     Fungsi generator untuk streaming data dari database.
     """
@@ -56,7 +56,7 @@ def stream_tag_prediction_value(tag_id):
         # Ambil data dari database
         data = get_tag_values(tag_id)
 
-        batch_size = 500  # Kirim data dalam batch
+        batch_size = size
         total_data = len(data)
 
         for start in range(0, total_data, batch_size):
