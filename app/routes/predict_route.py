@@ -27,7 +27,10 @@ def stream_values():
         # Ambil parameter `tag_id`
         tag_id = request.args.get("tag_id", default=1, type=int)
         size = request.args.get("size", default=1, type=int)
-        return Response(stream_tag_value(tag_id,size), content_type="text/event-stream")
+        sleep = request.args.get("sleep", default=1, type=int)
+        return Response(
+            stream_tag_value(tag_id, size, sleep), content_type="text/event-stream"
+        )
     except Exception as e:
         # Format error response
         error_data = {"error": str(e)}
@@ -46,8 +49,10 @@ def stream_prediction_values():
         # Ambil parameter `tag_id`
         tag_id = request.args.get("tag_id", default=1, type=int)
         size = request.args.get("size", default=1, type=int)
+        sleep = request.args.get("sleep", default=1, type=int)
         return Response(
-            stream_tag_prediction_value(tag_id,size), content_type="text/event-stream"
+            stream_tag_prediction_value(tag_id, size, sleep),
+            content_type="text/event-stream",
         )
     except Exception as e:
         # Format error response
