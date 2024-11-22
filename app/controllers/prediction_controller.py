@@ -37,6 +37,7 @@ def stream_tag_value(tag_id, size):
             batch = data[start : start + batch_size]
             payload = {
                 "data": batch,
+                "size": size,
                 "progress": f"{start + len(batch)} / {total_data}",
                 "percentage": (start + len(batch)) / total_data * 100,
             }
@@ -48,7 +49,7 @@ def stream_tag_value(tag_id, size):
         yield f"data: {json.dumps(error_data)}\n\n"
 
 
-def stream_tag_prediction_value(tag_id,size):
+def stream_tag_prediction_value(tag_id, size):
     """
     Fungsi generator untuk streaming data dari database.
     """
@@ -64,6 +65,7 @@ def stream_tag_prediction_value(tag_id,size):
             batch = data[start : start + batch_size]
             payload = {
                 "data": batch,
+                "size": size,
                 "progress": f"{start + len(batch)} / {total_data}",
                 "percentage": (start + len(batch)) / total_data * 100,
             }
