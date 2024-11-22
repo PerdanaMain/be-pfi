@@ -64,59 +64,87 @@ def get_tag_by_id(tag_id):
     }
 
 
+from datetime import datetime
+
+
 def get_tag_values(tag_id):
-    conn = get_fetch_connection()
-    cursor = conn.cursor()
+    """
+    Ambil data berdasarkan `tag_id` dari database.
+    """
+    try:
+        conn = get_fetch_connection()
+        cursor = conn.cursor()
 
-    query = """
-        SELECT 
-            dl_value_tag.time_stamp AS timestamp,
-            dl_value_tag.value AS value
-        FROM dl_value_tag
-        WHERE dl_value_tag.tag_id = %s
+        query = """
+            SELECT 
+                dl_value_tag.time_stamp AS timestamp,
+                dl_value_tag.value AS value
+            FROM dl_value_tag
+            WHERE dl_value_tag.tag_id = %s
         """
-    cursor.execute(query, (tag_id,))
-    columns = [col[0] for col in cursor.description]
-    tag_values = cursor.fetchall()
+        cursor.execute(query, (tag_id,))
+        columns = [col[0] for col in cursor.description]
+        results = cursor.fetchall()
 
-    cursor.close()
-    conn.close()
+        # Ubah hasil menjadi list of dictionaries
+        tag_values = []
+        for row in results:
+            record = dict(zip(columns, row))
+            # Konversi timestamp ke string
+            if isinstance(record["timestamp"], datetime):
+                record["timestamp"] = record["timestamp"].isoformat()  # Format ISO 8601
+            tag_values.append(record)
 
-    tag = get_tag_by_id(tag_id)
-    predict = get_predicted_values(tag_id)
-
-    return {
-        "tag": tag["tag"],
-        "tag_values": [
-            tag_value_resource(tag_value, columns) for tag_value in tag_values
-        ],
-        "predicted_values": predict["predicted_values"],
-    }
+        return tag_values
+    except Exception as e:
+        print(f"Database Error: {e}")  # Log error
+        return None
+    finally:
+        # Pastikan koneksi ditutup
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 
 def get_predicted_values(tag_id):
-    conn = get_fetch_connection()
-    cursor = conn.cursor()
+    """
+    Ambil data berdasarkan `tag_id` dari database.
+    """
+    try:
+        conn = get_fetch_connection()
+        cursor = conn.cursor()
 
-    query = """
-        SELECT 
-            dl_predict_tag.created_at AS timestamp,
-            dl_predict_tag.value AS value
-        FROM dl_predict_tag
-        WHERE dl_predict_tag.tag_id = %s
+        query = """
+            SELECT 
+                dl_predict_tag.time_stamp AS timestamp,
+                dl_predict_tag.value AS value
+            FROM dl_predict_tag
+            WHERE dl_predict_tag.tag_id = %s
         """
-    cursor.execute(query, (tag_id,))
-    columns = [col[0] for col in cursor.description]
-    predicted_values = cursor.fetchall()
+        cursor.execute(query, (tag_id,))
+        columns = [col[0] for col in cursor.description]
+        results = cursor.fetchall()
 
-    cursor.close()
-    conn.close()
+        # Ubah hasil menjadi list of dictionaries
+        predict_values = []
+        for row in results:
+            record = dict(zip(columns, row))
+            # Konversi timestamp ke string
+            if isinstance(record["timestamp"], datetime):
+                record["timestamp"] = record["timestamp"].isoformat()  # Format ISO 8601
+            predict_values.append(record)
 
-    return {
-        "predicted_values": [
-            tag_value_resource(tag_value, columns) for tag_value in predicted_values
-        ],
-    }
+        return predict_values
+    except Exception as e:
+        print(f"Database Error: {e}")  # Log error
+        return None
+    finally:
+        # Pastikan koneksi ditutup
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 
 def get_selected_tags(*tag, page=1, limit=10):
