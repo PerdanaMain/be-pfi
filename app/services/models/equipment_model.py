@@ -34,10 +34,13 @@ def get_equipments(page=1, limit=10):
         result = []
         for parent in parents:
             parent_id = parent[columns.index("id")]
-            childrens = get_equipment_childrens(parent_id)["childrens"]
 
+            # Mengambil data anak secara rekursif
+            childrens = get_equipment_childrens(parent_id, columns)
+
+            # Mengolah data parent
             parent_data = equipment_resource(parent, columns)
-            parent_data["childrens"] = childrens
+            parent_data["childrens"] = childrens if childrens else None
 
             result.append(parent_data)
 
@@ -83,26 +86,33 @@ def get_equipment(id):
         raise Exception(f"Error fetching equipment: {e}")
 
 
-def get_equipment_childrens(equipment_id):
+def get_equipment_childrens(parent_id, columns):
     try:
         conn = get_connection()
         cursor = conn.cursor()
 
         sql = "SELECT * FROM ms_equipment_master WHERE parent_id = %s"
-        cursor.execute(sql, (equipment_id,))
+        cursor.execute(sql, (parent_id,))
 
-        columns = [col[0] for col in cursor.description]
-        equipments = cursor.fetchall()
+        childrens = cursor.fetchall()
+
+        result = []
+        for child in childrens:
+            child_data = equipment_resource(child, columns)
+
+            # Jika anak juga memiliki anak, panggil fungsi rekursif
+            child_data["childrens"] = (
+                get_equipment_childrens(child[columns.index("id")], columns)
+                if child[columns.index("parent_id")]
+                else None
+            )
+
+            result.append(child_data)
 
         cursor.close()
 
-        return {
-            "childrens": (
-                [equipment_resource(equipment, columns) for equipment in equipments]
-                if equipments
-                else None
-            )
-        }
+        return result
+
     except Exception as e:
         raise Exception(f"Error fetching equipment children: {e}")
 
