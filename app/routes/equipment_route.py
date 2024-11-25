@@ -7,7 +7,6 @@ from app.controllers.master_equipment_controller import (
     show,
     update,
     delete,
-    search,
     selected_tag,
     tag_index,
     tag_psd_values,
@@ -52,17 +51,11 @@ def create_equipment():
 
 
 @token_required
-@app.route(prefix + "/equipment", methods=["GET"])
-def get_equipment():
-    return search()
-
-
-@token_required
 @app.route(prefix + "/equipment/<uuid:id>", methods=["GET", "PUT", "DELETE"])
 def detail_equipment(id):
     if request.method == "GET":
-        return show(id)
+        return show(str(id))
     elif request.method == "PUT":
-        return update(id)
+        return update(str(id))
     elif request.method == "DELETE":
-        return delete(id)
+        return delete(str(id))
