@@ -2,6 +2,20 @@ from config import Config
 import psycopg2
 
 
+def get_connection():
+    try:
+        conn = psycopg2.connect(
+            host=Config.DB_HOST,
+            database=Config.DB_NAME,
+            user=Config.DB_USERNAME,
+            password=Config.DB_PASSWORD,
+            port=Config.DB_PORT,
+        )
+        return conn
+    except Exception as e:
+        return str(e)
+
+
 def get_fetch_connection():
     try:
         conn = psycopg2.connect(
