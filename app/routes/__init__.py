@@ -7,26 +7,21 @@ from app.routes import (
     predict_route,
     feature_route,
 )
-from digital_twin_migration.database import db
-from sqlalchemy import text
 from app.services.response import not_found
-from config import Config
+from app.config.database import get_connection
 
 
 @app.route(prefix + "/")
 def index():
-    print(Config.SQLALCHEMY_DATABASE_URI)
 
     try:
-        conn = db.engine.connect().execute(text("SELECT 1"))
+
         return make_response(
             jsonify(
                 {
                     "status": True,
                     "message": "Welcome to Digital Twin API",
-                    "data": (
-                        "DB Connected" if conn.rowcount == 1 else "DB Not Connected"
-                    ),
+                    "data": get_connection(),
                 }
             ),
             200,

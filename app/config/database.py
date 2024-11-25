@@ -5,11 +5,11 @@ import psycopg2
 def get_connection():
     try:
         conn = psycopg2.connect(
-            host=Config.DB_HOST,
-            database=Config.DB_NAME,
-            user=Config.DB_USERNAME,
-            password=Config.DB_PASSWORD,
-            port=Config.DB_PORT,
+            host=Config.DB_MAIN_HOST,
+            database=Config.DB_MAIN_NAME,
+            user=Config.DB_MAIN_USERNAME,
+            password=Config.DB_MAIN_PASSWORD,
+            port=Config.DB_MAIN_PORT,
         )
         return conn
     except Exception as e:
