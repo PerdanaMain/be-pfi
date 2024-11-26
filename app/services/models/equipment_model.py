@@ -134,7 +134,13 @@ def get_equipment(id):
 
         result = []
 
+        tree_id = equipment[columns.index("equipment_tree_id")]
+        tree_data = get_eq_tree_by_id(tree_id)
+        childrens = get_equipment_childrens(id, columns)
+
         parent_data = equipment_resource(equipment, columns)
+        parent_data["equipment_tree"] = tree_data if tree_data else None
+        parent_data["childrens"] = childrens if childrens else None
         result.append(parent_data)
 
         return {"equipments": result} if result else None
