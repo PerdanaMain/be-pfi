@@ -1,5 +1,6 @@
 from app.config.database import get_connection
 from app.resources.master_equipment_resource import equipment_resource
+from app.services.models.eq_tree_model import get_eq_tree_by_id
 from datetime import datetime
 import uuid
 import pytz
@@ -11,7 +12,9 @@ def get_equipments(page=1, limit=10):
         cursor = conn.cursor()
 
         # Query untuk mengambil total jumlah parent (untuk total halaman)
-        count_sql = "SELECT COUNT(*) FROM ms_equipment_master WHERE parent_id IS NULL"
+        count_sql = (
+            "SELECT COUNT(*) FROM ms_equipment_master_backup WHERE parent_id IS NULL"
+        )
         cursor.execute(count_sql)
         total_parents = cursor.fetchone()[0]
 
@@ -21,7 +24,7 @@ def get_equipments(page=1, limit=10):
         # Query untuk mengambil parent dengan paginasi
         sql = """
             SELECT * 
-            FROM ms_equipment_master 
+            FROM ms_equipment_master_backup 
             WHERE parent_id IS NULL 
             ORDER BY id ASC 
             LIMIT %s OFFSET %s
@@ -34,13 +37,16 @@ def get_equipments(page=1, limit=10):
         result = []
         for parent in parents:
             parent_id = parent[columns.index("id")]
+            tree_id = parent[columns.index("equipment_tree_id")]
 
             # Mengambil data anak secara rekursif
             childrens = get_equipment_childrens(parent_id, columns)
+            tree = get_eq_tree_by_id(tree_id)
 
             # Mengolah data parent
             parent_data = equipment_resource(parent, columns)
             parent_data["childrens"] = childrens if childrens else None
+            parent_data["equipment_tree"] = tree if tree else None
 
             result.append(parent_data)
 
@@ -51,7 +57,61 @@ def get_equipments(page=1, limit=10):
                 "page": page,
                 "limit": limit,
                 "total_pages": total_pages,
-                "total_parents": total_parents,
+                "total_data": total_parents,
+            },
+            "equipments": result if result else None,
+        }
+    except Exception as e:
+        raise Exception(f"Error fetching equipments: {e}")
+
+
+def get_equipments_by_tree_id(equipment_tree_id, page=1, limit=10):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        # Query untuk mengambil total jumlah parent (untuk total halaman)
+        count_sql = "SELECT COUNT(*) FROM ms_equipment_master_backup WHERE equipment_tree_id = %s"
+        cursor.execute(count_sql, (equipment_tree_id,))
+        total_parents = cursor.fetchone()[0]
+
+        # Hitung total halaman
+        total_pages = (total_parents + limit - 1) // limit
+
+        # Query untuk mengambil parent dengan paginasi
+        sql = """
+            SELECT * 
+            FROM ms_equipment_master_backup 
+            WHERE equipment_tree_id = %s 
+            ORDER BY id ASC 
+            LIMIT %s OFFSET %s
+        """
+        cursor.execute(sql, (equipment_tree_id, limit, (page - 1) * limit))
+
+        columns = [col[0] for col in cursor.description]
+        parents = cursor.fetchall()
+
+        result = []
+        for parent in parents:
+            eq_tree_id = parent[columns.index("equipment_tree_id")]
+
+            # Mengambil data anak secara rekursif
+            tree = get_eq_tree_by_id(eq_tree_id)
+
+            # Mengolah data parent
+            parent_data = equipment_resource(parent, columns)
+            parent_data["equipment_tree"] = tree if tree else None
+
+            result.append(parent_data)
+
+        cursor.close()
+
+        return {
+            "pagination": {
+                "page": page,
+                "limit": limit,
+                "total_pages": total_pages,
+                "total_data": total_parents,
             },
             "equipments": result if result else None,
         }
@@ -64,7 +124,7 @@ def get_equipment(id):
         conn = get_connection()
         cursor = conn.cursor()
 
-        sql = "SELECT * FROM ms_equipment_master WHERE id = %s"
+        sql = "SELECT * FROM ms_equipment_master_backup WHERE id = %s"
         cursor.execute(sql, (id,))
 
         columns = [col[0] for col in cursor.description]
@@ -73,11 +133,8 @@ def get_equipment(id):
         cursor.close()
 
         result = []
-        parent_id = equipment[columns.index("id")]
-        childrens = get_equipment_childrens(parent_id)["childrens"]
 
         parent_data = equipment_resource(equipment, columns)
-        parent_data["childrens"] = childrens
         result.append(parent_data)
 
         return {"equipments": result} if result else None
@@ -91,14 +148,16 @@ def get_equipment_childrens(parent_id, columns):
         conn = get_connection()
         cursor = conn.cursor()
 
-        sql = "SELECT * FROM ms_equipment_master WHERE parent_id = %s"
+        sql = "SELECT * FROM ms_equipment_master_backup WHERE parent_id = %s"
         cursor.execute(sql, (parent_id,))
 
         childrens = cursor.fetchall()
 
         result = []
         for child in childrens:
-            child_data = equipment_resource(child, columns)
+            child_data = equipment_resource(child, columns) if child else None
+
+            tree_data = get_eq_tree_by_id(child[columns.index("equipment_tree_id")])
 
             # Jika anak juga memiliki anak, panggil fungsi rekursif
             child_data["childrens"] = (
@@ -106,6 +165,7 @@ def get_equipment_childrens(parent_id, columns):
                 if child[columns.index("parent_id")]
                 else None
             )
+            child_data["equipment_tree"] = tree_data if tree_data else None
 
             result.append(child_data)
 
@@ -147,7 +207,7 @@ def create_equipment(
         }
 
         sql = """
-            INSERT INTO ms_equipment_master 
+            INSERT INTO ms_equipment_master_backup 
             (id, name, equipment_tree_id, category_id, parent_id, assetnum, location_tag, system_tag, created_at, updated_at) 
             VALUES (%(id)s, %(name)s, %(equipment_tree_id)s, %(category_id)s, %(parent_id)s, %(assetnum)s, %(location_tag)s, %(system_tag)s, %(created_at)s, %(updated_at)s)
         """
@@ -181,7 +241,7 @@ def update_equipment(id, data):
 
         # Query untuk update data
         sql = f"""
-            UPDATE ms_equipment_master 
+            UPDATE ms_equipment_master_backup 
             SET {set_clause} 
             WHERE id = %(id)s
         """
@@ -199,10 +259,10 @@ def update_equipment(id, data):
 def delete_equipment(id):
     try:
         # Query untuk memastikan record dengan id ada
-        check_sql = "SELECT COUNT(*) FROM ms_equipment_master WHERE id = %s"
+        check_sql = "SELECT COUNT(*) FROM ms_equipment_master_backup WHERE id = %s"
 
         # Query untuk menghapus equipment
-        delete_sql = "DELETE FROM ms_equipment_master WHERE id = %s"
+        delete_sql = "DELETE FROM ms_equipment_master_backup WHERE id = %s"
 
         with get_connection() as conn:
             with conn.cursor() as cursor:

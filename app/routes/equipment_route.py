@@ -7,6 +7,7 @@ from app.controllers.master_equipment_controller import (
     show,
     update,
     delete,
+    params,
     selected_tag,
     tag_index,
     tag_psd_values,
@@ -18,6 +19,12 @@ from app.controllers.master_equipment_controller import (
 @app.route(prefix + "/equipments", methods=["GET"])
 def get_equipments():
     return index()
+
+
+@token_required
+@app.route(prefix + "/equipment", methods=["GET"])
+def get_equipment():
+    return params()
 
 
 @token_required
