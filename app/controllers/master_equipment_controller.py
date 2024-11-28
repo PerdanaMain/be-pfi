@@ -33,6 +33,7 @@ def params():
         return bad_request(False, f"Internal Server Error: {e}", None)
 
 
+# unused
 def tag_index():
     try:
         # requests
@@ -46,6 +47,7 @@ def tag_index():
         return bad_request(False, f"Internal Server Error: {e}", None)
 
 
+# unused
 def tag_by_id(id):
     try:
         data = get_tag_by_id(id)
@@ -55,6 +57,7 @@ def tag_by_id(id):
         return bad_request(False, f"Internal Server Error: {e}", None)
 
 
+# unused
 def selected_tag():
     try:
         # requests
@@ -68,6 +71,7 @@ def selected_tag():
         return bad_request(False, f"Internal Server Error: {e}", None)
 
 
+# unused
 def tag_psd_values(tag_id):
     try:
         data = get_psd_values(tag_id)

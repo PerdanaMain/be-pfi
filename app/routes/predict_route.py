@@ -17,6 +17,7 @@ def predict_values():
     return index()
 
 
+# unused
 @token_required
 @app.route(prefix + "/stream-values", methods=["GET"])
 def stream_values():
@@ -39,6 +40,7 @@ def stream_values():
         )
 
 
+# unused
 @token_required
 @app.route(prefix + "/stream-prediction-values", methods=["GET"])
 def stream_prediction_values():

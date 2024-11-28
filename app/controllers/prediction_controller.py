@@ -1,10 +1,8 @@
 from flask import request, Response
 from app.services.response import *
-from app.services.models.tag_model import (
-    get_predicted_values,
-    get_tag_by_id,
-    get_tag_values,
-)
+from app.services.models.tag_model import *
+from app.services.models.feature_data_model import *
+from app.services.models.predict_model import *
 import time
 import json
 
@@ -12,11 +10,22 @@ import json
 def index():
     try:
         # requests
-        tag_id = request.args.get("tag_id", default=1, type=int)
+        equipment_id = request.args.get("equipment_id", default=1, type=str)
+        features_id = request.args.get("features_id", default=1, type=str)
 
-        data = get_tag_values(tag_id)
+        data = []
 
-        return success(True, "Data Prediction fetched successfully", data)
+        values = get_data_values(equipment_id, features_id)
+        prediction = get_predict_values(equipment_id, features_id)
+
+        data.append(values)
+        data.append(prediction)
+
+        return success(
+            True,
+            "Data Prediction fetched successfully",
+            data,
+        )
     except Exception as e:
         return bad_request(False, f"Internal Server Error: {e}", None)
 
