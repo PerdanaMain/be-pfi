@@ -143,7 +143,7 @@ def get_equipment(id):
         parent_data["childrens"] = childrens if childrens else None
         result.append(parent_data)
 
-        return {"equipments": result} if result else None
+        return {"equipments": result[0]} if result else None
 
     except Exception as e:
         raise Exception(f"Error fetching equipment: {e}")
