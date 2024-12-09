@@ -14,9 +14,9 @@ def get_equipments(page=1, limit=10):
 
         # Query untuk mengambil total jumlah parent (untuk total halaman)
         count_sql = """
-            SELECT COUNT(*) 
+            SELECT COUNT(DISTINCT ms_equipment_master.id) 
             FROM ms_equipment_master
-            JOIN pf_parts ON ms_equipment_master.id = pf_parts.equipment_id 
+            JOIN pf_parts ON ms_equipment_master.id = pf_parts.equipment_id;
         """
         cursor.execute(count_sql)
         total_parents = cursor.fetchone()[0]
@@ -26,11 +26,12 @@ def get_equipments(page=1, limit=10):
 
         # Query untuk mengambil parent dengan paginasi
         sql = """
-            SELECT ms_equipment_master.*, pf_parts.id as part_id
+            SELECT DISTINCT ON (ms_equipment_master.id) 
+            ms_equipment_master.*,
+            pf_parts.id as part_id
             FROM ms_equipment_master
-            JOIN pf_parts ON ms_equipment_master.id = pf_parts.equipment_id 
-            ORDER BY ms_equipment_master.id ASC 
-            LIMIT %s OFFSET %s
+            JOIN pf_parts ON ms_equipment_master.id = pf_parts.equipment_id
+            ORDER BY ms_equipment_master.id ASC;
         """
         cursor.execute(sql, (limit, (page - 1) * limit))
 
