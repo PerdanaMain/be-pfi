@@ -33,54 +33,6 @@ def params():
         return bad_request(False, f"Internal Server Error: {e}", None)
 
 
-# unused
-def tag_index():
-    try:
-        # requests
-        page = request.args.get("page", default=1, type=int)
-        limit = request.args.get("limit", default=10, type=int)
-
-        data = get_all_tags(page=page, limit=limit)
-
-        return success(True, "Tags Data fetched successfully", data)
-    except Exception as e:
-        return bad_request(False, f"Internal Server Error: {e}", None)
-
-
-# unused
-def tag_by_id(id):
-    try:
-        data = get_tag_by_id(id)
-
-        return success(True, "Tag Data fetched successfully", data)
-    except Exception as e:
-        return bad_request(False, f"Internal Server Error: {e}", None)
-
-
-# unused
-def selected_tag():
-    try:
-        # requests
-        page = request.args.get("page", default=1, type=int)
-        limit = request.args.get("limit", default=10, type=int)
-
-        data = get_selected_tags(3865, 3866, 3871, 3870, page=page, limit=limit)
-        print(data)
-        return success(True, "Selected Tags Data fetched successfully", data)
-    except Exception as e:
-        return bad_request(False, f"Internal Server Error: {e}", None)
-
-
-# unused
-def tag_psd_values(tag_id):
-    try:
-        data = get_psd_values(tag_id)
-
-        return success(True, "PSD Values fetched successfully", data)
-    except Exception as e:
-        return bad_request(False, f"Internal Server Error: {e}", None)
-
-
 def create():
     try:
         req = request.get_json()

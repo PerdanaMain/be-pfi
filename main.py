@@ -1,8 +1,8 @@
 from app import app
-from config import Config
+from app.config.config import Config
 
 if __name__ == "__main__":
-    port = Config.PORT
+    port = Config.APP_PORT
     app.run(
         port=port,
         debug=True,

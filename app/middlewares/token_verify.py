@@ -1,6 +1,6 @@
 from flask import request
 import requests
-from config import Config
+from app.config.config import Config
 from functools import wraps
 from app.services.response import unauthorized, forbidden, bad_request
 

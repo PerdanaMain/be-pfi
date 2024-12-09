@@ -8,10 +8,6 @@ from app.controllers.master_equipment_controller import (
     update,
     delete,
     params,
-    selected_tag,
-    tag_index,
-    tag_psd_values,
-    tag_by_id,
 )
 
 
@@ -25,34 +21,6 @@ def get_equipments():
 @app.route(prefix + "/equipment", methods=["GET"])
 def get_equipment():
     return params()
-
-
-# unused
-@token_required
-@app.route(prefix + "/selected-tags", methods=["GET"])
-def get_selected_tags():
-    return selected_tag()
-
-
-# unused
-@token_required
-@app.route(prefix + "/tag/<int:id>", methods=["GET"])
-def get_tag(id):
-    return tag_by_id(id)
-
-
-# unused
-@token_required
-@app.route(prefix + "/tags", methods=["GET"])
-def get_tags():
-    return tag_index()
-
-
-# unused
-@token_required
-@app.route(prefix + "/psd-values/<int:id>", methods=["GET"])
-def get_psd(id):
-    return tag_psd_values(id)
 
 
 @token_required
