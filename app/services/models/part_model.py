@@ -39,9 +39,17 @@ def get_parts_by_equipment_id(equipment_id):
         cursor = conn.cursor()
 
         sql = """
-            SELECT * 
-            FROM pf_parts
-            WHERE equipment_id = %s
+            SELECT 
+                pp.*,
+                (
+                    SELECT dfd.value
+                    FROM dl_features_data dfd 
+                    WHERE dfd.part_id = pp.id
+                    order by dfd.date_time desc
+                    limit 1
+                ) as values
+            FROM pf_parts pp
+            WHERE pp.equipment_id = %s;
         """
         cursor.execute(sql, (equipment_id,))
 
