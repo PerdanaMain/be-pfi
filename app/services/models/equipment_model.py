@@ -1,6 +1,7 @@
 from app.config.database import get_connection
 from app.resources.master_equipment_resource import equipment_resource
 from app.services.models.eq_tree_model import get_eq_tree_by_id
+from app.services.models.part_model import get_parts_by_equipment_id
 from datetime import datetime
 import uuid
 import pytz
@@ -12,7 +13,11 @@ def get_equipments(page=1, limit=10):
         cursor = conn.cursor()
 
         # Query untuk mengambil total jumlah parent (untuk total halaman)
-        count_sql = "SELECT COUNT(*) FROM ms_equipment_master WHERE parent_id IS NULL"
+        count_sql = """
+            SELECT COUNT(*) 
+            FROM ms_equipment_master
+            JOIN pf_parts ON ms_equipment_master.id = pf_parts.equipment_id 
+        """
         cursor.execute(count_sql)
         total_parents = cursor.fetchone()[0]
 
@@ -21,10 +26,10 @@ def get_equipments(page=1, limit=10):
 
         # Query untuk mengambil parent dengan paginasi
         sql = """
-            SELECT * 
-            FROM ms_equipment_master 
-            WHERE parent_id IS NULL 
-            ORDER BY id ASC 
+            SELECT ms_equipment_master.*, pf_parts.id as part_id
+            FROM ms_equipment_master
+            JOIN pf_parts ON ms_equipment_master.id = pf_parts.equipment_id 
+            ORDER BY ms_equipment_master.id ASC 
             LIMIT %s OFFSET %s
         """
         cursor.execute(sql, (limit, (page - 1) * limit))
@@ -136,11 +141,11 @@ def get_equipment(id):
 
         tree_id = equipment[columns.index("equipment_tree_id")]
         tree_data = get_eq_tree_by_id(tree_id)
-        childrens = get_equipment_childrens(id, columns)
+        parts = get_parts_by_equipment_id(id)
 
         parent_data = equipment_resource(equipment, columns)
         parent_data["equipment_tree"] = tree_data if tree_data else None
-        parent_data["childrens"] = childrens if childrens else None
+        parent_data["parts"] = parts if parts else None
         result.append(parent_data)
 
         return {"equipments": result[0]} if result else None

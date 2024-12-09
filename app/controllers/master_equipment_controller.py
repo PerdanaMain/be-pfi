@@ -2,6 +2,7 @@ from flask import request
 from app.services.response import *
 from app.services.models.equipment_model import *
 from app.services.models.tag_model import *
+from app.services.models.part_model import *
 from app.services.models.eq_tree_model import *
 
 
@@ -70,6 +71,7 @@ def create():
 def show(id):
     try:
         data = get_equipment(str(id))
+        # data = get_parts_by_equipment_id(str(id))
 
         return success(True, "Master Equipment fetched successfully", data)
     except Exception as e:
