@@ -40,12 +40,10 @@ def get_parts_by_equipment_id(equipment_id):
         cursor = conn.cursor()
 
         sql = """
-            SELECT DISTINCT ON (dfd.features_id) 
-                pp.*, dfd.part_id, dfd.features_id, dfd.value, dfd.date_time
+            SELECT
+                pp.*
             FROM pf_parts pp
-            JOIN dl_features_data dfd ON pp.id = dfd.part_id
-            WHERE pp.equipment_id = %s
-            ORDER BY dfd.features_id, dfd.date_time DESC;
+            WHERE pp.equipment_id = %s;
         """
         cursor.execute(sql, (equipment_id,))
 
@@ -55,12 +53,47 @@ def get_parts_by_equipment_id(equipment_id):
         result = []
         for part in parts:
             part_id = part[columns.index("id")]
-            feature = get_feature(part[columns.index("features_id")])
 
             # Mengambil data anak secara rekursif
             part_data = part_resource(part, columns)
-            part_data["feature"] = feature["feature"]
+            part_data["values"] = get_parts_values(part_id)
+            # part_data["feature"] = feature["feature"]
 
+            result.append(part_data)
+
+        cursor.close()
+
+        return result if result else None
+    except Exception as e:
+        raise e
+
+
+def get_parts_values(part_id):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        sql = """
+            select distinct on (dfd.features_id) 
+                dfd.*
+            from dl_features_data dfd 
+            where dfd.part_id = %s
+            order by dfd.features_id, dfd.date_time;
+        """
+        cursor.execute(sql, (part_id,))
+
+        columns = [col[0] for col in cursor.description]
+        parts = cursor.fetchall()
+
+        result = []
+        for part in parts:
+            part_id = part[columns.index("id")]
+            features_id = part[columns.index("features_id")]
+            features = get_feature(features_id)
+
+            # Mengambil data anak secara rekursif
+            part_data = part_resource(part, columns)
+            part_data["feature"] = features["feature"]
             result.append(part_data)
 
         cursor.close()
