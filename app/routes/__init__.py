@@ -6,6 +6,7 @@ from app.routes import (
     eq_tree_route,
     predict_route,
     feature_route,
+    part_route,
 )
 from app.services.response import not_found
 from datetime import datetime

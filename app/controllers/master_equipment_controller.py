@@ -71,7 +71,6 @@ def create():
 def show(id):
     try:
         data = get_equipment(str(id))
-        # data = get_parts_by_equipment_id(str(id))
 
         return success(True, "Master Equipment fetched successfully", data)
     except Exception as e:

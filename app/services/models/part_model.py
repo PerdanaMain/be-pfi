@@ -34,6 +34,32 @@ def get_parts():
         raise e
 
 
+def get_part(id):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        sql = "SELECT * FROM pf_parts WHERE id = %s"
+        cursor.execute(sql, (id,))
+
+        columns = [col[0] for col in cursor.description]
+        part = cursor.fetchone()
+
+        cursor.close()
+
+        if not part:
+            return None
+
+        result = []
+        data = part_resource(part, columns)
+        result.append(data)
+
+        return {"part": result[0]}
+
+    except Exception as e:
+        raise Exception(f"Error fetching equipment: {e}")
+
+
 def get_parts_by_equipment_id(equipment_id):
     try:
         conn = get_connection()
