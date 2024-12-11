@@ -80,15 +80,24 @@ def get_parts_by_equipment_id(equipment_id):
         for part in parts:
             part_id = part[columns.index("id")]
 
-            # Mengambil data anak secara rekursif
-            part_data = part_resource(part, columns)
-            part_data["values"] = get_parts_values(part_id)
-            # part_data["feature"] = feature["feature"]
+            # Mengambil values
+            values = get_parts_values(part_id)
 
-            result.append(part_data)
+            if values:
+                # Membuat salinan part untuk setiap value
+                for value in values:
+                    part_data = part_resource(
+                        part, columns
+                    )  # Membuat salinan baru dari part
+                    part_data["values"] = [value]  # Menetapkan single value
+                    result.append(part_data)
+            else:
+                # Jika tidak ada values, tetap masukkan part dengan values kosong
+                part_data = part_resource(part, columns)
+                part_data["values"] = []
+                result.append(part_data)
 
         cursor.close()
-
         return result if result else None
     except Exception as e:
         raise e
@@ -113,17 +122,14 @@ def get_parts_values(part_id):
 
         result = []
         for part in parts:
-            part_id = part[columns.index("id")]
             features_id = part[columns.index("features_id")]
             features = get_feature(features_id)
 
-            # Mengambil data anak secara rekursif
             part_data = part_resource(part, columns)
             part_data["feature"] = features["feature"]
             result.append(part_data)
 
         cursor.close()
-
         return result if result else None
     except Exception as e:
         raise e
