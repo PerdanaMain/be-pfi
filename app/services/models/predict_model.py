@@ -9,6 +9,7 @@ def get_predict_values(part_id, features_id):
         # Query untuk mengambil data
         query = """
             SELECT * FROM dl_predict WHERE part_id = %s AND features_id = %s
+            ORDER BY date_time ASC
         """
 
         cursor.execute(query, (part_id, features_id))
