@@ -1,6 +1,7 @@
 from app import app, prefix
 from flask import jsonify, make_response
 from app.routes import (
+    chart_route,
     equipment_route,
     category_route,
     eq_tree_route,

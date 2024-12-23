@@ -9,6 +9,7 @@ def token_required(f):
     @wraps(f)
     def decorator(*args, **kwargs):
         token = None
+        auth = Config.AUTH_SERVICE_ENDPOINT
         if "Authorization" in request.headers:
             token = request.headers["Authorization"]
 
@@ -17,12 +18,11 @@ def token_required(f):
 
         try:
             payload = requests.get(
-                Config.AUTH_SERVICE_ENDPOINT + "/verify-token",
-                headers={"Authorization": "Bearer " + token},
+                auth + "/verify-token",
+                headers={"Authorization": token},
             )
-            print(payload.status_code)
-            if not payload.status_code != 200:
-                return forbidden(False, "Invalid token", None)
+            if payload.status_code != 200:
+                return forbidden(False, "Token is invalid", None)
 
         except Exception as e:
             return bad_request(False, f"Error while checking token: {e}", None)
