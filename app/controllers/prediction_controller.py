@@ -30,6 +30,7 @@ def index():
         return bad_request(False, f"Internal Server Error: {e}", None)
 
 
+<<<<<<< HEAD
 def detail():
     try:
         # requests
@@ -48,6 +49,8 @@ def detail():
         return bad_request(False, f"Internal Server Error: {e}", None)
 
 
+=======
+>>>>>>> ec5c6e14e4cdf815d5d908c43b0a0f8e41859cae
 def stream_tag_value(tag_id, size, sleep):
     """
     Fungsi generator untuk streaming data dari database.
