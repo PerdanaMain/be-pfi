@@ -1,7 +1,10 @@
 from app.config.database import get_connection
 from app.resources.master_equipment_resource import equipment_resource
 from app.services.models.eq_tree_model import get_eq_tree_by_id
-from app.services.models.part_model import get_parts_by_equipment_id
+from app.services.models.part_model import (
+    get_parts_by_equipment_id,
+    get_parts_by_equpment_id_with_detail,
+)
 from datetime import datetime
 import uuid
 import pytz
@@ -46,11 +49,13 @@ def get_equipments(page=1, limit=10):
             # Mengambil data anak secara rekursif
             childrens = get_equipment_childrens(parent_id, columns)
             tree = get_eq_tree_by_id(tree_id)
+            parts = get_parts_by_equpment_id_with_detail(parent[columns.index("id")])
 
             # Mengolah data parent
             parent_data = equipment_resource(parent, columns)
             parent_data["childrens"] = childrens if childrens else None
             parent_data["equipment_tree"] = tree if tree else None
+            parent_data["parts"] = parts if parts else None
 
             result.append(parent_data)
 

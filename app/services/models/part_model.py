@@ -34,6 +34,38 @@ def get_parts():
         raise e
 
 
+def get_parts_by_equpment_id_with_detail(equipment_id):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        sql = """
+            SELECT pf_parts.*, pf_details.* 
+            FROM pf_parts
+            JOIN pf_details ON pf_details.part_id = pf_parts.id
+            WHERE equipment_id = %s
+        """
+        cursor.execute(sql, (equipment_id,))
+
+        columns = [col[0] for col in cursor.description]
+        parts = cursor.fetchall()
+
+        result = []
+        for part in parts:
+            equipment_id = part[columns.index("equipment_id")]
+
+            # Mengambil data anak secara rekursif
+            part_data = part_resource(part, columns)
+
+            result.append(part_data)
+
+        cursor.close()
+
+        return result if result else None
+    except Exception as e:
+        raise e
+
+
 def get_part(id):
     try:
         conn = get_connection()

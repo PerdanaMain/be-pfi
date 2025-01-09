@@ -3,6 +3,7 @@ from flask import request
 from app.middlewares.token_verify import token_required
 from app.controllers.master_equipment_controller import (
     index,
+    get_predicted_fail,
     create,
     show,
     update,
@@ -15,6 +16,12 @@ from app.controllers.master_equipment_controller import (
 @app.route(prefix + "/equipments", methods=["GET"])
 def get_equipments():
     return index()
+
+
+@token_required
+@app.route(prefix + "/equipments/predicted-fail", methods=["GET"])
+def get_predicted_fail_equipments():
+    return get_predicted_fail()
 
 
 @token_required
