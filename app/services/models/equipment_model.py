@@ -50,12 +50,21 @@ def get_equipments(page=1, limit=10):
             childrens = get_equipment_childrens(parent_id, columns)
             tree = get_eq_tree_by_id(tree_id)
             parts = get_parts_by_equpment_id_with_detail(parent[columns.index("id")])
-
             # Mengolah data parent
             parent_data = equipment_resource(parent, columns)
             parent_data["childrens"] = childrens if childrens else None
             parent_data["equipment_tree"] = tree if tree else None
             parent_data["parts"] = parts if parts else None
+
+            if parts:
+                status_equipment = "normal"  # default status
+                for part in parts:
+                    if part.get("predict_status") in ["warning", "predicted fail"]:
+                        status_equipment = part["predict_status"]
+                        break  # keluar dari loop jika sudah menemukan warning/predicted fail
+                parent_data["status_equipment"] = status_equipment
+            else:
+                parent_data["status_equipment"] = "normal"
 
             result.append(parent_data)
 
