@@ -36,6 +36,7 @@ def get_parts():
 
 def get_parts_by_equpment_id_with_detail(equipment_id):
     try:
+
         conn = get_connection()
         cursor = conn.cursor()
 
@@ -68,25 +69,33 @@ def get_parts_by_equpment_id_with_detail(equipment_id):
 
 def get_part(id):
     try:
+        from app.services.models.equipment_model import get_equipment
+
         conn = get_connection()
         cursor = conn.cursor()
 
-        sql = "SELECT * FROM pf_parts WHERE id = %s"
+        sql = """
+        SELECT * FROM pf_parts WHERE id = %s 
+        """
         cursor.execute(sql, (id,))
 
         columns = [col[0] for col in cursor.description]
         part = cursor.fetchone()
 
-        cursor.close()
-
         if not part:
             return None
 
-        result = []
-        data = part_resource(part, columns)
-        result.append(data)
+        # Konversi part ke dictionary
+        part_data = part_resource(part, columns)
 
-        return {"part": result[0]}
+        # Ambil equipment data dan tambahkan ke part
+        equipment_id = part[columns.index("equipment_id")]
+        equipment = get_equipment(equipment_id)
+
+        # Tambahkan equipment ke part_data
+        part_data["equipment"] = equipment["equipments"]["name"]
+
+        return {"part": part_data}
 
     except Exception as e:
         raise Exception(f"Error fetching equipment: {e}")

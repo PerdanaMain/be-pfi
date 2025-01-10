@@ -5,6 +5,6 @@ from app.controllers.part_controller import *
 
 
 @app.route(prefix + "/part/<uuid:id>", methods=["GET"])
-@token_required
+# @token_required
 def detail_part(id):
     return show(str(id))
