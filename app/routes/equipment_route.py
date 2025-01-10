@@ -3,7 +3,7 @@ from flask import request
 from app.middlewares.token_verify import token_required
 from app.controllers.master_equipment_controller import (
     index,
-    get_predicted_fail,
+    get_systems_status,
     create,
     show,
     update,
@@ -19,9 +19,9 @@ def get_equipments():
 
 
 @token_required
-@app.route(prefix + "/equipments/predicted-fail", methods=["GET"])
-def get_predicted_fail_equipments():
-    return get_predicted_fail()
+@app.route(prefix + "/equipments/systems", methods=["GET"])
+def get_systems():
+    return get_systems_status()
 
 
 @token_required

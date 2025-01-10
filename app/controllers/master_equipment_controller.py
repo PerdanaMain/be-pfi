@@ -34,13 +34,9 @@ def params():
         return bad_request(False, f"Internal Server Error: {e}", None)
 
 
-def get_predicted_fail():
+def get_systems_status():
     try:
-        # requests
-        page = request.args.get("page", default=1, type=int)
-        limit = request.args.get("limit", default=10, type=int)
-
-        data = None
+        data = get_systems()
 
         return success(True, "Predicted Fail Equipment fetched successfully", data)
     except Exception as e:

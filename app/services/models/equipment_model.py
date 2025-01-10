@@ -10,6 +10,156 @@ import uuid
 import pytz
 
 
+def get_systems():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        # Query untuk systems (level 1)
+        sql = "SELECT * FROM ms_equipment_master WHERE equipment_tree_id = '757f6cd5-56c0-4702-b2cd-b409c6afa64b'"
+        cursor.execute(sql)
+        systems_columns = [col[0] for col in cursor.description]
+        systems = cursor.fetchall()
+
+        # Query untuk sub-systems
+        sql = """
+        SELECT * FROM ms_equipment_master WHERE id IN(
+            SELECT DISTINCT ON (parent_id) parent_id FROM ms_equipment_master WHERE parent_id IS NOT NULL
+        )
+        """
+        cursor.execute(sql)
+        sub_system_columns = [col[0] for col in cursor.description]
+        sub_systems = cursor.fetchall()
+
+        # Query untuk equipment dengan parts
+        sql = """
+            SELECT DISTINCT ON (ms_equipment_master.id) 
+            ms_equipment_master.*,
+            pf_parts.id as part_id
+            FROM ms_equipment_master
+            JOIN pf_parts ON ms_equipment_master.id = pf_parts.equipment_id
+            ORDER BY ms_equipment_master.id ASC;
+        """
+        cursor.execute(sql)
+        columns = [col[0] for col in cursor.description]
+        equipments = cursor.fetchall()
+
+        # Memproses equipments dan parts terlebih dahulu
+        equipment_dict = {}
+        for equipment in equipments:
+            equipment_id = equipment[columns.index("id")]
+            tree_id = equipment[columns.index("equipment_tree_id")]
+            parent_id = equipment[columns.index("parent_id")]
+
+            # Mengambil data anak secara rekursif
+            childrens = get_equipment_childrens(equipment_id, columns)
+            tree = get_eq_tree_by_id(tree_id)
+            parts = get_parts_by_equpment_id_with_detail(equipment[columns.index("id")])
+
+            # Mengolah data equipment
+            equipment_data = equipment_resource(equipment, columns)
+            equipment_data["childrens"] = childrens if childrens else None
+            equipment_data["equipment_tree"] = tree if tree else None
+            equipment_data["parts"] = parts if parts else None
+            equipment_data["parent_id"] = parent_id
+
+            # Menentukan equipment_status dari parts
+            if parts:
+                equipment_status = "normal"
+                for part in parts:
+                    if part.get("predict_status") == "predicted failed":
+                        equipment_status = "predicted failed"
+                        break
+                    elif part.get("predict_status") == "warning":
+                        equipment_status = "warning"
+                equipment_data["equipment_status"] = equipment_status
+            else:
+                equipment_data["equipment_status"] = "normal"
+
+            equipment_dict[equipment_id] = equipment_data
+
+        # Memproses sub-systems dan menentukan statusnya
+        sub_systems_result = []
+        for sub_system in sub_systems:
+            sub_system_dict = dict(zip(sub_system_columns, sub_system))
+            sub_system_id = sub_system_dict["id"]
+
+            # Mencari equipment yang terkait dengan sub-system ini
+            related_equipments = [
+                eq for eq in equipment_dict.values() if eq["parent_id"] == sub_system_id
+            ]
+
+            # Menentukan sub_system_status berdasarkan equipment_status
+            sub_system_status = "normal"
+            for eq in related_equipments:
+                if eq["equipment_status"] == "predicted failed":
+                    sub_system_status = "predicted failed"
+                    break
+                elif eq["equipment_status"] == "warning":
+                    sub_system_status = "warning"
+
+            sub_system_dict["sub_system_status"] = sub_system_status
+            sub_system_dict["equipments"] = sorted(
+                related_equipments,
+                key=lambda x: (
+                    0
+                    if x["equipment_status"] == "predicted failed"
+                    else 1 if x["equipment_status"] == "warning" else 2
+                ),
+            )
+            sub_systems_result.append(sub_system_dict)
+
+        # Mengurutkan sub-systems berdasarkan status
+        sub_systems_result.sort(
+            key=lambda x: (
+                0
+                if x["sub_system_status"] == "predicted failed"
+                else 1 if x["sub_system_status"] == "warning" else 2
+            )
+        )
+
+        # Memproses systems dan menentukan statusnya
+        systems_result = []
+        for system in systems:
+            system_dict = dict(zip(systems_columns, system))
+            system_id = system_dict["id"]
+
+            # Mencari sub-systems yang terkait dengan system ini
+            related_sub_systems = [
+                sub for sub in sub_systems_result if sub["parent_id"] == system_id
+            ]
+
+            # Menentukan system_status berdasarkan sub_system_status
+            system_status = "normal"
+            for sub in related_sub_systems:
+                if sub["sub_system_status"] == "predicted failed":
+                    system_status = "predicted failed"
+                    break
+                elif sub["sub_system_status"] == "warning":
+                    system_status = "warning"
+
+            system_dict["system_status"] = system_status
+            system_dict["sub_systems"] = related_sub_systems
+            systems_result.append(system_dict)
+
+        # Mengurutkan systems berdasarkan status
+        systems_result.sort(
+            key=lambda x: (
+                0
+                if x["system_status"] == "predicted failed"
+                else 1 if x["system_status"] == "warning" else 2
+            )
+        )
+
+        cursor.close()
+        conn.close()
+
+        return {"systems": systems_result}
+
+    except Exception as e:
+        raise Exception(f"Error fetching equipment children: {e}")
+
+
 def get_equipments(page=1, limit=10):
     try:
         conn = get_connection()
@@ -59,7 +209,7 @@ def get_equipments(page=1, limit=10):
             if parts:
                 status_equipment = "normal"  # default status
                 for part in parts:
-                    if part.get("predict_status") in ["warning", "predicted fail"]:
+                    if part.get("predict_status") in ["warning", "predicted failed"]:
                         status_equipment = part["predict_status"]
                         break  # keluar dari loop jika sudah menemukan warning/predicted fail
                 parent_data["status_equipment"] = status_equipment
@@ -67,6 +217,18 @@ def get_equipments(page=1, limit=10):
                 parent_data["status_equipment"] = "normal"
 
             result.append(parent_data)
+
+            # Mengurutkan result berdasarkan prioritas status
+            def get_status_priority(status):
+                priority_map = {
+                    "predicted fail": 0,  # Prioritas tertinggi
+                    "warning": 1,
+                    "normal": 2,  # Prioritas terendah
+                }
+                return priority_map.get(status["status_equipment"], 3)
+
+            # Mengurutkan result berdasarkan status_equipment
+            result.sort(key=get_status_priority)
 
         cursor.close()
 
