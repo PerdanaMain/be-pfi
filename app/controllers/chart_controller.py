@@ -14,14 +14,14 @@ def information_chart():
         informations.append(
             {
                 "name": "Predicted Time to Failure",
-                "value": "> 3",
+                "value": "-",
                 "satuan": "Month",
             }
         )
         informations.append(
             {
                 "name": "Current Condition",
-                "value": 100,
+                "value": "-",
                 "satuan": "%",
             },
         )
@@ -35,7 +35,7 @@ def information_chart():
         informations.append(
             {
                 "name": "Mean Time to Repair",
-                "value": 100,
+                "value": "-",
                 "satuan": "hours",
             },
         )
