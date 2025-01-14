@@ -80,6 +80,7 @@ def create():
 def show(id):
     try:
         data = get_equipment(str(id))
+        data["parts"] = get_parts_by_equpment_id_with_detail(str(id))
 
         return success(True, "Master Equipment fetched successfully", data)
     except Exception as e:
