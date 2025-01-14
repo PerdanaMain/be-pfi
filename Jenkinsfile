@@ -7,7 +7,7 @@ pipeline {
         // Use credentials for Docker Hub
         DOCKER_CREDENTIALS = credentials('aimodocker')
         // Replace with your image name
-        IMAGE_NAME = 'oh-service'
+        IMAGE_NAME = 'pfi-service'
         // Replace with your docker compose service name
         SERVICE_NAME = 'oh-app'
         // Variable for Git commit hash
