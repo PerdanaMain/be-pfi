@@ -112,7 +112,7 @@ def get_parts_by_equipment_id(equipment_id):
 
         sql = """
             SELECT
-                pp.*, pf_details.*
+                pp.*, pf_details.upper_threshold, pf_details.lower_threshold, pf_details.predict_status
             FROM pf_parts pp
             JOIN pf_details ON pf_details.part_id = pp.id
             WHERE pp.equipment_id = %s;
