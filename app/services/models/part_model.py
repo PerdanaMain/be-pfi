@@ -112,8 +112,9 @@ def get_parts_by_equipment_id(equipment_id):
 
         sql = """
             SELECT
-                pp.*
+                pp.*, pf_details.*
             FROM pf_parts pp
+            JOIN pf_details ON pf_details.part_id = pp.id
             WHERE pp.equipment_id = %s;
         """
         cursor.execute(sql, (equipment_id,))
