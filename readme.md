@@ -10,7 +10,7 @@ Project ini merupakan aplikasi backend menggunakan flask untuk membangun arsitek
 ### How to run
 
 1. Clone this repository
-2. set up virtual environment
+2. Set up virtual environment
 3. Install all dependencies, run `poetry install`
 4. Run the app, run `poetry run python main.py`
 
