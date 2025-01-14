@@ -53,10 +53,14 @@ def get_parts_by_equpment_id_with_detail(equipment_id):
 
         result = []
         for part in parts:
+            part_id = part[columns.index("id")]
             equipment_id = part[columns.index("equipment_id")]
+
+            values = get_parts_values(part_id)
 
             # Mengambil data anak secara rekursif
             part_data = part_resource(part, columns)
+            part_data["values"] = values
 
             result.append(part_data)
 
