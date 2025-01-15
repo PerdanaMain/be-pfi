@@ -38,7 +38,7 @@ def get_systems_status():
     try:
         data = get_systems()
 
-        return success(True, "Predicted Fail Equipment fetched successfully", data)
+        return success(True, "Systems fetched successfully", data)
     except Exception as e:
         return bad_request(False, f"Internal Server Error: {e}", None)
 

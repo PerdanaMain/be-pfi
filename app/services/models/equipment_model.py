@@ -165,7 +165,7 @@ def get_equipments(page=1, limit=10):
         conn = get_connection()
         cursor = conn.cursor()
 
-        # Query untuk mengambil total jumlah parent (untuk total halaman)
+        # Query untuk total count
         count_sql = """
             SELECT COUNT(DISTINCT ms_equipment_master.id) 
             FROM ms_equipment_master
@@ -173,62 +173,52 @@ def get_equipments(page=1, limit=10):
         """
         cursor.execute(count_sql)
         total_parents = cursor.fetchone()[0]
-
-        # Hitung total halaman
         total_pages = (total_parents + limit - 1) // limit
 
-        # Query untuk mengambil parent dengan paginasi
+        # Query utama dengan subquery untuk status dari pf_details
         sql = """
-            SELECT DISTINCT ON (ms_equipment_master.id) 
-            ms_equipment_master.*,
-            pf_parts.id as part_id
-            FROM ms_equipment_master
-            JOIN pf_parts ON ms_equipment_master.id = pf_parts.equipment_id
-            ORDER BY ms_equipment_master.id ASC;
+            WITH EquipmentStatus AS (
+                SELECT 
+                    p.equipment_id,
+                    CASE 
+                        WHEN bool_or(pd.predict_status = 'predicted failed') THEN 'predicted failed'
+                        WHEN bool_or(pd.predict_status = 'warning') THEN 'warning'
+                        ELSE 'normal'
+                    END as status_equipment
+                FROM pf_parts p
+                JOIN pf_details pd ON p.id = pd.part_id
+                GROUP BY p.equipment_id
+            )
+            SELECT DISTINCT ON (em.id) 
+                em.*,
+                p.id as part_id,
+                COALESCE(es.status_equipment, 'normal') as status_equipment
+            FROM ms_equipment_master em
+            JOIN pf_parts p ON em.id = p.equipment_id
+            LEFT JOIN EquipmentStatus es ON em.id = es.equipment_id
+            ORDER BY em.id ASC, 
+                     CASE 
+                         WHEN es.status_equipment = 'predicted failed' THEN 1
+                         WHEN es.status_equipment = 'warning' THEN 2
+                         ELSE 3
+                     END
+            LIMIT %s OFFSET %s;
         """
-        cursor.execute(sql, (limit, (page - 1) * limit))
+
+        offset = (page - 1) * limit
+        cursor.execute(sql, (limit, offset))
 
         columns = [col[0] for col in cursor.description]
         parents = cursor.fetchall()
 
         result = []
         for parent in parents:
-            parent_id = parent[columns.index("id")]
-            tree_id = parent[columns.index("equipment_tree_id")]
-
-            # Mengambil data anak secara rekursif
-            childrens = get_equipment_childrens(parent_id, columns)
-            tree = get_eq_tree_by_id(tree_id)
-            parts = get_parts_by_equpment_id_with_detail(parent[columns.index("id")])
-            # Mengolah data parent
             parent_data = equipment_resource(parent, columns)
-            parent_data["childrens"] = childrens if childrens else None
-            parent_data["equipment_tree"] = tree if tree else None
-            parent_data["parts"] = parts if parts else None
-
-            if parts:
-                status_equipment = "normal"  # default status
-                for part in parts:
-                    if part.get("predict_status") in ["warning", "predicted failed"]:
-                        status_equipment = part["predict_status"]
-                        break  # keluar dari loop jika sudah menemukan warning/predicted fail
-                parent_data["status_equipment"] = status_equipment
-            else:
-                parent_data["status_equipment"] = "normal"
+            # Ambil status langsung dari hasil query
+            status_idx = columns.index("status_equipment")
+            parent_data["status_equipment"] = parent[status_idx]
 
             result.append(parent_data)
-
-            # Mengurutkan result berdasarkan prioritas status
-            def get_status_priority(status):
-                priority_map = {
-                    "predicted fail": 0,  # Prioritas tertinggi
-                    "warning": 1,
-                    "normal": 2,  # Prioritas terendah
-                }
-                return priority_map.get(status["status_equipment"], 3)
-
-            # Mengurutkan result berdasarkan status_equipment
-            result.sort(key=get_status_priority)
 
         cursor.close()
 
