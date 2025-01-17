@@ -26,7 +26,7 @@ def get_systems():
         fetch = cursor.fetchall()
 
         sub_systems = [dict(zip(sub_system_cols, d)) for d in fetch]
-        equipments = get_equipments(page=1, limit=100)
+        equipments = get_equipments()
 
         # Mendapatkan status untuk setiap sistem
         for sub_system in sub_systems:
