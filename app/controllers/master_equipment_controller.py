@@ -12,7 +12,7 @@ def index():
         page = request.args.get("page", default=1, type=int)
         limit = request.args.get("limit", default=10, type=int)
 
-        data = get_equipments(page=page, limit=limit)
+        data = get_equipments()
 
         return success(True, "Master Equipment fetched successfully", data)
     except Exception as e:

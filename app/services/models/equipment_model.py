@@ -79,20 +79,10 @@ def get_systems():
         raise Exception(f"Error fetching equipments: {e}")
 
 
-def get_equipments(page=1, limit=10):
+def get_equipments():
     try:
         conn = get_connection()
         cursor = conn.cursor()
-
-        # Query untuk total count
-        count_sql = """
-            SELECT COUNT(DISTINCT ms_equipment_master.id) 
-            FROM ms_equipment_master
-            JOIN pf_parts ON ms_equipment_master.id = pf_parts.equipment_id;
-        """
-        cursor.execute(count_sql)
-        total_parents = cursor.fetchone()[0]
-        total_pages = (total_parents + limit - 1) // limit
 
         # Query utama dengan subquery untuk status dari pf_details
         sql = """
@@ -115,17 +105,15 @@ def get_equipments(page=1, limit=10):
             FROM ms_equipment_master em
             JOIN pf_parts p ON em.id = p.equipment_id
             LEFT JOIN EquipmentStatus es ON em.id = es.equipment_id
-            ORDER BY em.id ASC, 
-                     CASE 
-                         WHEN es.status_equipment = 'predicted failed' THEN 1
-                         WHEN es.status_equipment = 'warning' THEN 2
-                         ELSE 3
-                     END
-            LIMIT %s OFFSET %s;
+            ORDER BY em.id ASC,
+                CASE 
+                    WHEN es.status_equipment = 'predicted failed' THEN 1
+                    WHEN es.status_equipment = 'warning' THEN 2
+                    ELSE 3
+                END;
         """
 
-        offset = (page - 1) * limit
-        cursor.execute(sql, (limit, offset))
+        cursor.execute(sql)
 
         columns = [col[0] for col in cursor.description]
         parents = cursor.fetchall()
@@ -142,12 +130,6 @@ def get_equipments(page=1, limit=10):
         cursor.close()
 
         return {
-            "pagination": {
-                "page": page,
-                "limit": limit,
-                "total_pages": total_pages,
-                "total_data": total_parents,
-            },
             "equipments": result if result else None,
         }
     except Exception as e:
