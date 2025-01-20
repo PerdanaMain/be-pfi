@@ -1,6 +1,22 @@
 from flask import request
 from app.services.response import *
 from app.services.models.feature_data_model import get_last_data_value
+from datetime import datetime
+
+
+def calculate_time_difference(time_failure_str, date_time_str):
+    if isinstance(time_failure_str, datetime) and isinstance(date_time_str, datetime):
+        time_failure = time_failure_str
+        date_time = date_time_str
+    else:
+        time_failure = datetime.strptime(time_failure_str, "%a, %d %b %Y %H:%M:%S GMT")
+        date_time = datetime.strptime(date_time_str, "%a, %d %b %Y %H:%M:%S GMT")
+
+    time_diff = time_failure - date_time
+    days_diff = time_diff.total_seconds() / (24 * 3600)
+    days_diff = round(days_diff)
+
+    return days_diff
 
 
 def information_chart():
@@ -11,30 +27,39 @@ def information_chart():
         informations = []
         current_value = get_last_data_value(part_id=part_id, feature_id=features_id)
 
+        predict_time_to_failure = (
+            calculate_time_difference(
+                current_value["values"][0]["time_failure"],
+                current_value["values"][0]["date_time"],
+            )
+            if current_value["values"][0]["time_failure"]
+            else None
+        )
+
         informations.append(
             {
-                "name": "Predicted Time to Failure",
-                "value": "-",
-                "satuan": "Month",
+                "name": f"predicted time to {current_value['values'][0]['predict_status']}",
+                "value": predict_time_to_failure if predict_time_to_failure else "-",
+                "satuan": "Days",
             }
         )
         informations.append(
             {
-                "name": "Current Condition",
+                "name": "current condition",
                 "value": "-",
                 "satuan": "%",
             },
         )
         informations.append(
             {
-                "name": "Current Value",
-                "value": round(current_value, 4),
+                "name": "current value",
+                "value": round(current_value["values"][0]["value"], 4),
                 "satuan": "um",
             },
         )
         informations.append(
             {
-                "name": "Mean Time to Repair",
+                "name": "mean time to repair",
                 "value": "-",
                 "satuan": "hours",
             },

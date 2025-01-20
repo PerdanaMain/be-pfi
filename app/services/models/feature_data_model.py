@@ -38,8 +38,11 @@ def get_last_data_value(part_id, feature_id):
 
         # Query untuk mengambil data
         query = """
-            SELECT * FROM dl_features_data WHERE part_id = %s AND features_id = %s
-            ORDER BY date_time DESC LIMIT 1
+            SELECT dl_features_data.*, pf_details.*
+            FROM dl_features_data 
+            JOIN pf_details ON dl_features_data.part_id = pf_details.part_id
+            WHERE dl_features_data.part_id = %s AND dl_features_data.features_id = %s
+            ORDER BY date_time DESC LIMIT 10
         """
 
         cursor.execute(query, (part_id, feature_id))
@@ -53,7 +56,12 @@ def get_last_data_value(part_id, feature_id):
         cursor.close()
         conn.close()
 
+        if data is None:
+            return None
+
         # Mengonversi setiap tuple menjadi dictionary
-        return data[3]
+        return {
+            "values": [dict(zip(columns, data))],
+        }
     except Exception as e:
         raise Exception(f"Error: {e}")
