@@ -32,13 +32,13 @@ def information_chart():
                 current_value["values"][0]["time_failure"],
                 current_value["values"][0]["date_time"],
             )
-            if current_value["values"][0]["time_failure"]
+            if current_value["values"][0]["predict_status"] == "predicted failed"
             else None
         )
 
         informations.append(
             {
-                "name": f"predicted time to {current_value['values'][0]['predict_status']}",
+                "name": f"predicted failure interval",
                 "value": predict_time_to_failure if predict_time_to_failure else "-",
                 "satuan": "Days",
             }
