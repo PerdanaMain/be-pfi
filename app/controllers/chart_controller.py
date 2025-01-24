@@ -1,7 +1,9 @@
 from flask import request
 from app.services.response import *
 from app.services.models.feature_data_model import get_last_data_value
+from app.services.models.part_model import get_part
 from datetime import datetime
+import requests
 
 
 def calculate_time_difference(time_failure_str, date_time_str):
@@ -26,6 +28,21 @@ def information_chart():
 
         informations = []
         current_value = get_last_data_value(part_id=part_id, feature_id=features_id)
+        part = get_part(part_id)
+        location_tag = part["part"]["location_tag"]
+
+        res = requests.get(
+            f"http://192.168.1.82:8000/reliability/asset/mttr/{location_tag}"
+        )
+        res = res.json()
+
+        mttr = "-"
+
+        try:
+            if res.get("data") and res["data"].get("hours") is not None:
+                mttr = res["data"]["hours"]
+        except (KeyError, AttributeError):
+            mttr = "-"
 
         predict_time_to_failure = (
             calculate_time_difference(
@@ -60,10 +77,14 @@ def information_chart():
         informations.append(
             {
                 "name": "mean time to repair",
-                "value": "-",
+                "value": mttr,
                 "satuan": "hours",
             },
         )
-        return success(True, "Chart Information Fetched Successfully", informations)
+        return success(
+            True,
+            "Chart Information Fetched Successfully",
+            informations,
+        )
     except Exception as e:
         return bad_request(False, f"Internal Server Error: {e}", None)
