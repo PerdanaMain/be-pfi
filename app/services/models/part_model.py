@@ -116,7 +116,7 @@ def get_parts_by_equipment_id(equipment_id):
         sql = """
             SELECT pp.*, pd.upper_threshold, pd.lower_threshold, pd.predict_status, dmt.unit
             FROM pf_parts pp
-            JOIN dl_ms_type dmt ON dmt.id = pp.type_id
+            LEFT JOIN dl_ms_type dmt ON dmt.id = pp.type_id
             LEFT JOIN (
                 SELECT DISTINCT ON (part_id) 
                     part_id,
