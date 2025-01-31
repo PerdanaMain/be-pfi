@@ -114,11 +114,18 @@ def get_parts_by_equipment_id(equipment_id):
         cursor = conn.cursor()
 
         sql = """
-            SELECT
-                pp.*, pf_details.upper_threshold, pf_details.lower_threshold, pf_details.predict_status, dl_ms_type.unit
+            SELECT pp.*, pd.upper_threshold, pd.lower_threshold, pd.predict_status, dmt.unit
             FROM pf_parts pp
-            JOIN pf_details ON pf_details.part_id = pp.id
-            JOIN dl_ms_type ON dl_ms_type.id = pp.type_id
+            JOIN dl_ms_type dmt ON dmt.id = pp.type_id
+            LEFT JOIN (
+                SELECT DISTINCT ON (part_id) 
+                    part_id,
+                    upper_threshold,
+                    lower_threshold,
+                    predict_status
+                FROM pf_details
+                ORDER BY part_id, id DESC
+            ) pd ON pd.part_id = pp.id
             WHERE pp.equipment_id = %s;
         """
         cursor.execute(sql, (equipment_id,))

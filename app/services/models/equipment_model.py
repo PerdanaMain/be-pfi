@@ -214,6 +214,7 @@ def get_equipment(id):
         parent_data = equipment_resource(equipment, columns)
         parent_data["equipment_tree"] = tree_data if tree_data else None
         parent_data["parts"] = parts if parts else None
+        parent_data["total_parts"] = len(parts) if parts else None
         result.append(parent_data)
 
         return {"equipments": result[0]} if result else None
