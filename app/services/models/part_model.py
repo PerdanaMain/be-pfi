@@ -126,7 +126,8 @@ def get_parts_by_equipment_id(equipment_id):
                 FROM pf_details
                 ORDER BY part_id, id DESC
             ) pd ON pd.part_id = pp.id
-            WHERE pp.equipment_id = %s;
+            WHERE pp.equipment_id = %s
+            order by pp.part_name asc;
         """
         cursor.execute(sql, (equipment_id,))
 
