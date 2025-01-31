@@ -71,7 +71,7 @@ def information_chart():
             {
                 "name": "current value",
                 "value": round(current_value["values"][0]["value"], 4),
-                "satuan": "um",
+                "satuan": part["part"]["unit"],
             },
         )
         informations.append(

@@ -79,7 +79,10 @@ def get_part(id):
         cursor = conn.cursor()
 
         sql = """
-        SELECT * FROM pf_parts WHERE id = %s 
+        SELECT pf_parts.*, dl_ms_type.unit
+        FROM pf_parts 
+        JOIN dl_ms_type ON pf_parts.type_id = dl_ms_type.id
+        WHERE pf_parts.id = %s 
         """
         cursor.execute(sql, (id,))
 
