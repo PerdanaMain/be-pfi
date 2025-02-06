@@ -117,6 +117,7 @@ def get_equipments():
 
         columns = [col[0] for col in cursor.description]
         parents = cursor.fetchall()
+        status_priority = {"predicted failed": 0, "warning": 1, "normal": 2}
 
         result = []
         for parent in parents:
@@ -127,10 +128,14 @@ def get_equipments():
 
             result.append(parent_data)
 
-        cursor.close()
+        # Urutkan hasil berdasarkan status priority
+        sorted_result = sorted(
+            result,
+            key=lambda x: status_priority.get(x["status_equipment"].lower(), 999),
+        )
 
         return {
-            "equipments": result if result else None,
+            "equipments": sorted_result if sorted_result else None,
         }
     except Exception as e:
         raise Exception(f"Error fetching equipments: {e}")
