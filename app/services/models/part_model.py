@@ -43,20 +43,20 @@ def get_report_parts():
         sql = """
             SELECT 
                 ms_equipment_master.id as equipment_id,
-                ms_equipment_master.name as equipment_name,
-                ms_equipment_master.location_tag as location_tag,
-                pf_parts.id as part_id,
+                ms_equipment_master.name as equipmentName,
+                ms_equipment_master.location_tag as equipmentTag,
+                pf_parts.id,
                 pf_parts.equipment_id, 
-                pf_parts.part_name,
+                pf_parts.part_name as sensorName,
                 pf_parts.type_id,
-                pf_parts.location_tag as sensor_tag,
-                pf_details.upper_threshold,
-                pf_details.lower_threshold,
-                pf_details.time_failure,
-                pf_details.predict_status,
-                dl_ms_type.unit,
-                dl_features_data.value as current_value,
-                dl_features_data.date_time as current_value_date
+                pf_parts.location_tag as sensorTag,
+                pf_details.upper_threshold as tripThreshold,
+                pf_details.lower_threshold as alarmThreshold,
+                pf_details.time_failure as PFInterval,
+                pf_details.predict_status as status,
+                dl_ms_type.unit as unit,
+                dl_features_data.value as currentValue,
+                dl_features_data.date_time as currentValueDate
             FROM pf_parts
             JOIN pf_details ON pf_details.part_id = pf_parts.id
             JOIN ms_equipment_master ON ms_equipment_master.id = pf_parts.equipment_id
