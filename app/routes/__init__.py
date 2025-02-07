@@ -8,6 +8,7 @@ from app.routes import (
     predict_route,
     feature_route,
     part_route,
+    report_route,
 )
 from app.services.response import not_found
 from datetime import datetime

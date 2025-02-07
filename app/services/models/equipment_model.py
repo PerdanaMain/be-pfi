@@ -228,6 +228,27 @@ def get_equipment(id):
         raise Exception(f"Error fetching equipment: {e}")
 
 
+def get_report_equipment(id):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        sql = "SELECT * FROM ms_equipment_master WHERE id = %s"
+        cursor.execute(sql, (id,))
+
+        columns = [col[0] for col in cursor.description]
+        equipment = cursor.fetchone()
+
+        cursor.close()
+
+        result = dict(zip(columns, equipment))
+
+        return result if result else None
+
+    except Exception as e:
+        raise Exception(f"Error fetching equipment: {e}")
+
+
 def get_equipment_childrens(parent_id, columns):
     try:
         conn = get_connection()

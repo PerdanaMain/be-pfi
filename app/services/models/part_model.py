@@ -34,6 +34,54 @@ def get_parts():
         raise e
 
 
+def get_report_parts():
+    try:
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        sql = """
+            SELECT 
+                ms_equipment_master.id as equipment_id,
+                ms_equipment_master.name as equipment_name,
+                ms_equipment_master.location_tag as location_tag,
+                pf_parts.id as part_id,
+                pf_parts.equipment_id, 
+                pf_parts.part_name,
+                pf_parts.type_id,
+                pf_parts.location_tag as sensor_tag,
+                pf_details.upper_threshold,
+                pf_details.lower_threshold,
+                pf_details.time_failure,
+                pf_details.predict_status,
+                dl_ms_type.unit,
+                dl_features_data.value as current_value,
+                dl_features_data.date_time as current_value_date
+            FROM pf_parts
+            JOIN pf_details ON pf_details.part_id = pf_parts.id
+            JOIN ms_equipment_master ON ms_equipment_master.id = pf_parts.equipment_id
+            JOIN dl_ms_type ON dl_ms_type.id = pf_parts.type_id
+            JOIN (
+                SELECT DISTINCT ON (part_id) 
+                    part_id, value, date_time
+                FROM dl_features_data
+                ORDER BY part_id, date_time DESC
+            ) dl_features_data ON dl_features_data.part_id = pf_parts.id
+        """
+        cursor.execute(sql)
+
+        columns = [col[0] for col in cursor.description]
+        parts = cursor.fetchall()
+
+        result = [dict(zip(columns, row)) for row in parts] if parts else None
+
+        cursor.close()
+
+        return result if result else None
+    except Exception as e:
+        raise e
+
+
 def get_parts_by_equpment_id_with_detail(equipment_id):
     try:
 

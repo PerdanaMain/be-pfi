@@ -43,6 +43,16 @@ def get_systems_status():
         return bad_request(False, f"Internal Server Error: {e}", None)
 
 
+def report_equipments():
+    try:
+        parts = get_report_parts()
+        data = []
+
+        return success(True, "Report fetched successfully", parts)
+    except Exception as e:
+        return bad_request(False, f"Internal Server Error: {e}", None)
+
+
 def create():
     try:
         req = request.get_json()
