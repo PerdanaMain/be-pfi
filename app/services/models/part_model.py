@@ -79,17 +79,7 @@ def get_report_parts():
         columns = [col[0] for col in cursor.description]
         parts = cursor.fetchall()
 
-        parts = [dict(zip(columns, row)) for row in parts] if parts else None
-        result = []
-
-        for part in parts:
-            part_id = part["id"]
-            equipment_id = part["equipment_id"]
-
-            # Mengambil data anak secara rekursif
-            part_data = part_resource(part, columns)
-
-            result.append(part_data)
+        result = [dict(zip(columns, row)) for row in parts] if parts else None
 
         cursor.close()
 
