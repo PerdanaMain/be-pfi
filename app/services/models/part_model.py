@@ -61,7 +61,9 @@ def get_report_parts():
                 dl_ms_type.unit as unit,
                 dl_features_data.value as currentValue,
                 dl_features_data.date_time as currentValueDate,
-                rp_oh_schedule.*
+                rp_oh_schedule.start as wostart,
+                rp_oh_schedule.finish as wofinish,
+                rp_oh_schedule.year as woyear
             FROM pf_parts
             JOIN pf_details ON pf_details.part_id = pf_parts.id
             JOIN ms_equipment_master ON ms_equipment_master.id = pf_parts.equipment_id
