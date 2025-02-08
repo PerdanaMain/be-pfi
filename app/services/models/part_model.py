@@ -58,6 +58,7 @@ def get_report_parts():
                 pf_details.upper_threshold as tripThreshold,
                 pf_details.lower_threshold as alarmThreshold,
                 pf_details.time_failure as PFInterval,
+                pf_details.pedict_status as status,
                 dl_ms_type.unit as unit,
                 dl_features_data.value as currentValue,
                 dl_features_data.date_time as currentValueDate,
