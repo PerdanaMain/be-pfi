@@ -34,6 +34,30 @@ def get_parts():
         raise e
 
 
+def get_detail(part_id):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        sql = """
+            SELECT * 
+            FROM pf_details
+            WHERE part_id = %s
+        """
+        cursor.execute(sql, (part_id,))
+
+        columns = [col[0] for col in cursor.description]
+        parts = cursor.fetchone()
+
+        result = dict(zip(columns, parts))
+
+        cursor.close()
+
+        return result if result else None
+    except Exception as e:
+        raise e
+
+
 def get_report_parts():
     try:
 
