@@ -13,18 +13,14 @@ def get_oh_schedule_by_year(year):
         FROM rp_oh_schedule
         WHERE year = %s
         """
-        cursor.execute(sql)
+        cursor.execute(sql, (year,))
         columns = [col[0] for col in cursor.description]
-        oh_schedules = cursor.fetchall()
+        oh_schedules = cursor.fetchone()
+
+        result = dict(zip(columns, oh_schedules))
 
         cursor.close()
 
-        return {
-            "oh_schedules": (
-                [feature_resource(oh_schedule, columns) for oh_schedule in oh_schedules]
-                if oh_schedules
-                else None
-            )
-        }
+        return {"oh_schedules": result}
     except Exception as e:
         raise Exception(f"Error fetching features: {e}")

@@ -1,5 +1,6 @@
 from flask import request
 from app.services.response import *
+from app.services.models.oh_schedule_model import get_oh_schedule_by_year
 from app.services.models.feature_data_model import get_last_data_value
 from app.services.models.part_model import get_part
 from datetime import datetime
@@ -53,10 +54,16 @@ def information_chart():
             else None
         )
 
+        oh_schedules = get_oh_schedule_by_year(year=datetime.now().year)
+
         informations.append(
             {
                 "name": f"predicted failure interval",
-                "value": predict_time_to_failure if predict_time_to_failure else "-",
+                "value": (
+                    predict_time_to_failure
+                    if predict_time_to_failure
+                    else oh_schedules["oh_schedules"]["start"]
+                ),
                 "satuan": "Days",
             }
         )
