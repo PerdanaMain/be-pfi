@@ -31,6 +31,7 @@ def information_chart():
         current_value = get_last_data_value(part_id=part_id, feature_id=features_id)
         part = get_part(part_id)
         location_tag = part["part"]["location_tag"]
+        now = datetime.now()
 
         res = requests.get(
             f"http://192.168.1.82:8000/reliability/asset/mttr/{location_tag}"
@@ -55,14 +56,16 @@ def information_chart():
         )
 
         oh_schedules = get_oh_schedule_by_year(year=datetime.now().year)
+        oh_start = calculate_time_difference(
+            oh_schedules["oh_schedules"]["start"],
+            now,
+        )
 
         informations.append(
             {
                 "name": f"predicted failure interval",
                 "value": (
-                    predict_time_to_failure
-                    if predict_time_to_failure
-                    else oh_schedules["oh_schedules"]["start"]
+                    predict_time_to_failure if predict_time_to_failure else oh_start
                 ),
                 "satuan": "Days",
             }
