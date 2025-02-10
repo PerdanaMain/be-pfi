@@ -3,7 +3,6 @@ from app.services.response import *
 from app.services.models.tag_model import *
 from app.services.models.feature_data_model import *
 from app.services.models.predict_model import *
-from app.services.models.part_model import *
 import time
 import json
 
@@ -17,17 +16,9 @@ def index():
         data = []
 
         values = get_data_values(equipment_id, features_id)
-
-        detail = get_detail(equipment_id)
-        trip = detail["upper_threshold"] / 2 * 1.5 + detail["upper_threshold"]
-        showValues = []
-        for value in values["values"]:
-            if value["value"] < trip:
-                showValues.append(value)
-
         prediction = get_predict_values(equipment_id, features_id)
 
-        data.append(showValues)
+        data.append(values)
         data.append(prediction)
 
         return success(
