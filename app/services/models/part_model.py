@@ -100,6 +100,26 @@ def get_report_parts():
                 ORDER BY part_id, date_time DESC
             ) dl_features_data ON dl_features_data.part_id = pf_parts.id
             CROSS JOIN rp_oh_schedule
+            GROUP BY 
+                ms_equipment_master.id,
+                ms_equipment_master.name,
+                ms_equipment_master.location_tag,
+                pf_parts.id,
+                pf_parts.equipment_id,
+                pf_parts.part_name,
+                pf_parts.type_id,
+                pf_parts.location_tag,
+                pf_details.upper_threshold,
+                pf_details.lower_threshold,
+                pf_details.time_failure,
+                pf_details.predict_status,
+                dl_ms_type.unit,
+                dl_features_data.value,
+                dl_features_data.date_time,
+                rp_oh_schedule.start,
+                rp_oh_schedule.finish,
+                rp_oh_schedule.year
+            ORDER BY  ms_equipment_master.name asc;
         """
         cursor.execute(sql)
 
