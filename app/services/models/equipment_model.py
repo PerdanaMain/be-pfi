@@ -10,6 +10,32 @@ import uuid
 import pytz
 
 
+def get_parent_equipments(parent_id):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        sql = """
+            SELECT 
+                ms_equipment_master.id,
+                ms_equipment_master.parent_id,
+                ms_equipment_master.name,
+                ms_equipment_master.assetnum,
+                ms_equipment_master.location_tag
+            FROM ms_equipment_master
+            WHERE ms_equipment_master.id = %s
+        """
+
+        cursor.execute(sql, (parent_id,))
+        equipment_cols = [col[0] for col in cursor.description]
+        fetch = cursor.fetchone()
+        parent_equipment = dict(zip(equipment_cols, fetch))
+
+        return parent_equipment
+    except Exception as e:
+        raise Exception(f"Error fetching parent equipments: {e}")
+
+
 def get_systems():
     try:
         conn = get_connection()

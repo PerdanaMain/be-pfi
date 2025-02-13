@@ -46,7 +46,11 @@ def get_systems_status():
 def report_equipments():
     try:
         parts = get_report_parts()
-        data = []
+
+        for part in parts:
+            parent_equipment = get_parent_equipments(part["parent_id"])
+            part["sub_system"] = parent_equipment
+            part["system"] = get_parent_equipments(parent_equipment["parent_id"])
 
         return success(True, "Report fetched successfully", parts)
     except Exception as e:

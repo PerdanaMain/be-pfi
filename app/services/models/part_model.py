@@ -74,6 +74,7 @@ def get_report_parts():
                 ms_equipment_master.id as equipment_id,
                 ms_equipment_master.name as equipmentName,
                 ms_equipment_master.location_tag as equipmentTag,
+                ms_equipment_master.parent_id as parent_id,
                 pf_parts.id,
                 pf_parts.equipment_id, 
                 pf_parts.part_name as sensorName,
