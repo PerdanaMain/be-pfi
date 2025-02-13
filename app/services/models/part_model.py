@@ -79,6 +79,7 @@ def get_report_parts():
                 pf_parts.equipment_id, 
                 pf_parts.part_name as sensorName,
                 pf_parts.type_id,
+                pf_parts.web_id,
                 pf_parts.location_tag as sensorTag,
                 pf_details.upper_threshold as tripThreshold,
                 pf_details.lower_threshold as alarmThreshold,
