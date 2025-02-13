@@ -65,7 +65,9 @@ def information_chart():
             {
                 "name": f"predicted failure interval",
                 "value": (
-                    predict_time_to_failure if predict_time_to_failure else oh_start
+                    predict_time_to_failure
+                    if predict_time_to_failure is not None
+                    else oh_start
                 ),
                 "satuan": "Days",
             }
