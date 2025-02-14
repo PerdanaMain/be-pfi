@@ -26,7 +26,7 @@ def index():
         return bad_request(False, f"Internal Server Error: {e}", None)
 
 
-def get_equipment_search():
+def search():
     try:
         name = request.args.get("name", default="", type=str)
 
@@ -38,5 +38,27 @@ def get_equipment_search():
             equipment["system"] = system
 
         return success(True, "Equipment searched successfully", data)
+    except Exception as e:
+        return bad_request(False, f"Internal Server Error: {e}", None)
+
+
+def show():
+    try:
+        id = request.args.get("id", default="", type=str)
+
+    except Exception as e:
+        return bad_request(False, f"Internal Server Error: {e}", None)
+
+
+def update():
+    try:
+        id = request.args.get("id", default="", type=str)
+    except Exception as e:
+        return bad_request(False, f"Internal Server Error: {e}", None)
+
+
+def delete():
+    try:
+        id = request.args.get("id", default="", type=str)
     except Exception as e:
         return bad_request(False, f"Internal Server Error: {e}", None)
