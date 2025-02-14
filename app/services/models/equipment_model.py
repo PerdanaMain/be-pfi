@@ -105,6 +105,74 @@ def get_systems():
         raise Exception(f"Error fetching equipments: {e}")
 
 
+def get_equipments_for_admin(
+    tree="53325b34-3f97-4f37-95cc-4a32b9de92de", limit=20, page=1
+):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        # Query untuk mengambil total jumlah parent (untuk total halaman)
+        count_sql = (
+            "SELECT COUNT(*) FROM ms_equipment_master WHERE equipment_tree_id = %s"
+        )
+        cursor.execute(count_sql, (tree,))
+        total_parents = cursor.fetchone()[0]
+
+        # Hitung total halaman
+        total_pages = (total_parents + limit - 1) // limit
+
+        sql = """
+            SELECT 
+                mem.*
+            FROM ms_equipment_master_backup mem
+            WHERE equipment_tree_id = %s 
+            ORDER BY name ASC
+            LIMIT %s OFFSET %s
+        """
+
+        cursor.execute(sql, (tree, limit, (page - 1) * limit))
+
+        columns = [col[0] for col in cursor.description]
+        equipments = cursor.fetchall()
+        equipments = [dict(zip(columns, equipment)) for equipment in equipments]
+
+        return {
+            "equipments": equipments if equipments else None,
+            "pagination": {
+                "page": page,
+                "limit": limit,
+                "total_pages": total_pages,
+                "total_data": total_parents,
+            },
+        }
+    except Exception as e:
+        raise Exception(f"Error fetching equipments: {e}")
+
+
+def search_equipment(name, tree="53325b34-3f97-4f37-95cc-4a32b9de92de"):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        search_pattern = f"%{name}%"
+
+        sql = """
+            SELECT * 
+            FROM ms_equipment_master_backup
+            WHERE name LIKE %s AND equipment_tree_id = %s
+            ORDER BY name ASC
+        """
+
+        cursor.execute(sql, (search_pattern, tree))
+        columns = [col[0] for col in cursor.description]
+        equipments = cursor.fetchall()
+        equipments = [dict(zip(columns, equipment)) for equipment in equipments]
+
+        return equipments
+    except Exception as e:
+        raise Exception(f"Error searching equipment: {e}")
+
+
 def get_equipments():
     try:
         conn = get_connection()

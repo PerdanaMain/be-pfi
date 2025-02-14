@@ -9,6 +9,7 @@ from app.routes import (
     feature_route,
     part_route,
     report_route,
+    admin_route,
 )
 from app.services.response import not_found
 from datetime import datetime
