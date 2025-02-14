@@ -34,6 +34,38 @@ def get_parts():
         raise e
 
 
+def get_all_parts():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        sql = """
+            SELECT 
+                mem.name,
+                pf.part_name,
+                pf.location_tag,
+                pd.upper_threshold,
+                pd.lower_threshold,
+                pd.one_hundred_percent_condition,
+                dmt.unit
+            FROM pf_parts pf
+            JOIN ms_equipment_master mem ON mem.id = pf.equipment_id
+            JOIN pf_details pd ON pd.part_id = pf.id
+            JOIN dl_ms_type dmt ON dmt.id = pf.type_id
+        """
+        cursor.execute(sql)
+
+        columns = [col[0] for col in cursor.description]
+        parts = cursor.fetchall()
+        parts = [dict(zip(columns, part)) for part in parts]
+
+        cursor.close()
+
+        return parts if parts else None
+    except Exception as e:
+        raise e
+
+
 def get_detail(part_id):
     try:
         conn = get_connection()
