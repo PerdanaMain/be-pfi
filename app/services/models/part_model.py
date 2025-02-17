@@ -337,3 +337,46 @@ def get_parts_values(part_id):
         return result if result else None
     except Exception as e:
         raise e
+
+
+def update_part(id, data):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        sql = """
+            UPDATE pf_parts
+            SET 
+                part_name = %s,
+                type_id = %s,
+            WHERE id = %s
+        """
+        cursor.execute(
+            sql, (data["part_name"], data["location_tag"], data["type_id"], id)
+        )
+        conn.commit()
+
+        sql = """
+        UPDATE pf_details
+        SET 
+            upper_threshold = %s,
+            lower_threshold = %s,
+            one_hundred_percent_condition = %s,
+        WHERE part_id = %s
+        """
+
+        cursor.execute(
+            sql,
+            (
+                data["trip_threshold"],
+                data["alarm_threshold"],
+                data["normal_value"],
+                id,
+            ),
+        )
+        conn.commit()
+
+        cursor.close()
+        return True
+    except Exception as e:
+        raise e

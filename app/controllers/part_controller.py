@@ -21,3 +21,22 @@ def show(id):
         return success(True, "Master Equipment fetched successfully", data)
     except Exception as e:
         return bad_request(False, f"Internal Server Error: {e}", None)
+
+
+def update(id):
+    try:
+        req = request.get_json()
+
+        if req["unit_id"] is None:
+            return bad_request(False, "Unit ID is required", None)
+        if req["alarm_threshold"] is None:
+            return bad_request(False, "Alarm Threshold is required", None)
+        if req["trip_threshold"] is None:
+            return bad_request(False, "Trip Threshold is required", None)
+        if req["normal_value"] is None:
+            return bad_request(False, "Normal Value is required", None)
+
+        data = update_part(id, req)
+        return success(True, "Master Equipment updated successfully", data)
+    except Exception as e:
+        return bad_request(False, f"Internal Server Error: {e}", None)
