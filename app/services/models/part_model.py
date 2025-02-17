@@ -48,6 +48,7 @@ def get_all_parts():
                 pd.upper_threshold as trip_threshold,
                 pd.lower_threshold as alarm_threshold,
                 pd.one_hundred_percent_condition as normal_value,
+                dmt.id as unit_id,
                 dmt.unit
             FROM pf_parts pf
             JOIN ms_equipment_master mem ON mem.id = pf.equipment_id
