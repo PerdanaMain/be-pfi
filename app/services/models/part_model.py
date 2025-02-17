@@ -42,6 +42,7 @@ def get_all_parts():
         sql = """
             SELECT 
                 mem.name,
+                pf.id as id,
                 pf.part_name,
                 pf.location_tag,
                 pd.upper_threshold,
