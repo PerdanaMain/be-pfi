@@ -45,9 +45,9 @@ def get_all_parts():
                 pf.id as id,
                 pf.part_name,
                 pf.location_tag,
-                pd.upper_threshold,
-                pd.lower_threshold,
-                pd.one_hundred_percent_condition,
+                pd.upper_threshold as trip_threshold,
+                pd.lower_threshold as alarm_threshold,
+                pd.one_hundred_percent_condition as normal_value,
                 dmt.unit
             FROM pf_parts pf
             JOIN ms_equipment_master mem ON mem.id = pf.equipment_id
