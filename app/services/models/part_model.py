@@ -215,11 +215,20 @@ def get_part(id):
         cursor = conn.cursor()
 
         sql = """
-        SELECT pf_parts.*, dl_ms_type.unit
-        FROM pf_parts 
-        JOIN dl_ms_type ON pf_parts.type_id = dl_ms_type.id
-        WHERE pf_parts.id = %s 
+        SELECT 
+            mem.name,
+            pf.*,
+            pd.upper_threshold as trip_threshold,
+            pd.lower_threshold as alarm_threshold,
+            pd.one_hundred_percent_condition as normal_value,
+            dl_ms_type.unit
+        FROM pf_parts pf
+        JOIN dl_ms_type ON pf.type_id = dl_ms_type.id
+        JOIN ms_equipment_master mem ON mem.id = pf.equipment_id
+        JOIN pf_details pd ON pd.part_id = pf.id
+        WHERE pf.id = %s 
         """
+
         cursor.execute(sql, (id,))
 
         columns = [col[0] for col in cursor.description]
