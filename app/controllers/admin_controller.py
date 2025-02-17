@@ -4,6 +4,7 @@ from app.services.models.equipment_model import *
 from app.services.models.tag_model import *
 from app.services.models.part_model import *
 from app.services.models.eq_tree_model import *
+from app.services.models.unit_model import *
 
 
 def index():
@@ -22,6 +23,14 @@ def index():
             equipment["system"] = system
 
         return success(True, "Master Equipment for admin fetched successfully", data)
+    except Exception as e:
+        return bad_request(False, f"Internal Server Error: {e}", None)
+
+
+def unit():
+    try:
+        data = get_units()
+        return success(True, "Units fetched successfully", data)
     except Exception as e:
         return bad_request(False, f"Internal Server Error: {e}", None)
 
