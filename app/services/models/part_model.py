@@ -1,6 +1,7 @@
 from app.config.database import get_connection
 from app.resources.part_resource import part_resource
 from app.services.models.feature_model import get_feature
+from datetime import datetime
 
 
 def get_parts():
@@ -49,11 +50,14 @@ def get_all_parts():
                 pd.lower_threshold as alarm_threshold,
                 pd.one_hundred_percent_condition as normal_value,
                 dmt.id as unit_id,
-                dmt.unit
+                dmt.unit,
+                pf.created_at,
+                pf.updated_at
             FROM pf_parts pf
             JOIN ms_equipment_master mem ON mem.id = pf.equipment_id
             JOIN pf_details pd ON pd.part_id = pf.id
             JOIN dl_ms_type dmt ON dmt.id = pf.type_id
+            ORDER by pf.updated_at desc;
         """
         cursor.execute(sql)
 
@@ -343,13 +347,15 @@ def update_part(id, data):
     try:
         conn = get_connection()
         cursor = conn.cursor()
+        now = datetime.now()
 
         sql = """
             UPDATE pf_parts
             SET 
                 part_name = %s,
                 location_tag = %s,
-                type_id = %s
+                type_id = %s,
+                updated_at = %s
             WHERE id = %s
         """
         cursor.execute(
@@ -358,6 +364,7 @@ def update_part(id, data):
                 data["part_name"],
                 data["location_tag"],
                 data["unit_id"],
+                now,
                 id,
             ),
         )
@@ -368,7 +375,8 @@ def update_part(id, data):
         SET 
             upper_threshold = %s,
             lower_threshold = %s,
-            one_hundred_percent_condition = %s
+            one_hundred_percent_condition = %s,
+            updated_at = %s
         WHERE part_id = %s
         """
 
@@ -378,6 +386,7 @@ def update_part(id, data):
                 data["trip_threshold"],
                 data["alarm_threshold"],
                 data["normal_value"],
+                now,
                 id,
             ),
         )
