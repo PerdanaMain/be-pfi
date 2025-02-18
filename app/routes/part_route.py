@@ -11,9 +11,9 @@ def all_parts():
 
 
 @app.route(prefix + "/part/<uuid:id>", methods=["GET", "PUT"])
-@token_required
+# @token_required
 def detail_part(id):
     if request.method == "GET":
-        return show(id)
+        return show(str(id))
     elif request.method == "PUT":
-        return update(id)
+        return update(str(id))
