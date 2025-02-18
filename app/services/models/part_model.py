@@ -348,11 +348,18 @@ def update_part(id, data):
             UPDATE pf_parts
             SET 
                 part_name = %s,
-                type_id = %s,
+                location_tag = %s,
+                type_id = %s
             WHERE id = %s
         """
         cursor.execute(
-            sql, (data["part_name"], data["location_tag"], data["type_id"], id)
+            sql,
+            (
+                data["part_name"],
+                data["location_tag"],
+                data["unit_id"],
+                id,
+            ),
         )
         conn.commit()
 
@@ -361,7 +368,7 @@ def update_part(id, data):
         SET 
             upper_threshold = %s,
             lower_threshold = %s,
-            one_hundred_percent_condition = %s,
+            one_hundred_percent_condition = %s
         WHERE part_id = %s
         """
 
