@@ -35,6 +35,30 @@ def get_parts():
         raise e
 
 
+def get_parts_to_fetch():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        sql = """
+            SELECT * 
+            FROM pf_parts
+            WHERE web_id IS NOT NULL
+        """
+        cursor.execute(sql)
+
+        columns = [col[0] for col in cursor.description]
+        parts = cursor.fetchall()
+
+        result = [dict(zip(columns, part)) for part in parts] if parts else None
+
+        cursor.close()
+
+        return result if result else None
+    except Exception as e:
+        raise e
+
+
 def get_all_parts():
     try:
         conn = get_connection()

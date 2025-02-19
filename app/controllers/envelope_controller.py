@@ -19,41 +19,38 @@ def index():
         print(f"Task running at: {current_time}")
 
         config = Config()
-        parts = get_parts()
+        parts = get_parts_to_fetch()
         print(f"Processing total: {len(parts)} parts")
 
         for part in parts:
             try:
-                if part[2] == None:
+                if part["web_id"] is None:
                     continue
 
-                print(
-                    f"Processing part: {part[3]}"
-                )  # Assuming part[3] contains part name
+                print(f"Processing part: {part["part_name"]}")
 
                 data = fetch(
                     config.PIWEB_API_USER,
                     config.PIWEB_API_PASS,
                     config.PIWEB_API_URL,
-                    part[1],
+                    part["id"],
                 )
 
-                print(f"Data: {data}")
+                print(f"Data: {len(data)}")
 
                 if not data.empty:
-                    create_envelope(data, part[0])
-                    print(f"Successfully processed part {part[3]}")
+                    # create_envelope(data, part[0])
+                    print(f"Successfully processed part {part["part_name"]}")
                 else:
-                    print(f"No data retrieved for part {part[3]}")
+                    print(f"No data retrieved for part {part["part_name"]}")
 
             except Exception as e:
-                print(f"Error processing part {part[3]}: {e}")
+                print(f"Error processing part {part["part_name"]}: {e}")
                 continue
 
-        print(f"Task completed at: {datetime.now(pytz.timezone('Asia/Jakarta'))}")
-
+        return success(True, "Envelope data fetched and save successfully", None)
     except Exception as e:
-        print(f"Error executing task: {e}")
+        return bad_request(False, f"Internal Server Error: {e}", None)
 
 
 def fetch(username: str, password: str, host: str, web_id: str) -> pd.DataFrame:
