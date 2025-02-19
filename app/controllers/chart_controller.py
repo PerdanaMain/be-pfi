@@ -30,21 +30,7 @@ def information_chart():
         informations = []
         current_value = get_last_data_value(part_id=part_id, feature_id=features_id)
         part = get_part(part_id)
-        # location_tag = part["part"]["location_tag"]
         now = datetime.now()
-
-        # res = requests.get(
-        #     f"http://192.168.1.82:8000/reliability/asset/mttr/{location_tag}"
-        # )
-        # res = res.json()
-
-        # mttr = "-"
-
-        # try:
-        #     if res.get("data") and res["data"].get("hours") is not None:
-        #         mttr = res["data"]["hours"]
-        # except (KeyError, AttributeError):
-        #     mttr = "-"
 
         predict_time_to_failure = (
             calculate_time_difference(
@@ -86,14 +72,6 @@ def information_chart():
                 "satuan": part["part"]["unit"],
             },
         )
-        informations.append(
-            {
-                "name": "mean time to repair",
-                "value": "-",
-                "satuan": "hours",
-            },
-        )
-
         return success(
             True,
             "Chart Information Fetched Successfully",
