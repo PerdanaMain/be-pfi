@@ -27,25 +27,19 @@ def index():
                 if part["web_id"] is None:
                     continue
 
-                print(f"Processing part: {part["part_name"]}")
+                data = fetch(
+                    config.PIWEB_API_USER,
+                    config.PIWEB_API_PASS,
+                    config.PIWEB_API_URL,
+                    part["id"],
+                )
 
-                # data = fetch(
-                #     config.PIWEB_API_USER,
-                #     config.PIWEB_API_PASS,
-                #     config.PIWEB_API_URL,
-                #     part["id"],
-                # )
-
-                # print(f"Data: {len(data)}")
+                print(f"Data: {len(data)}")
 
                 # if not data.empty:
-                #     # create_envelope(data, part[0])
-                #     print(f"Successfully processed part {part["part_name"]}")
-                # else:
-                #     print(f"No data retrieved for part {part["part_name"]}")
+                # create_envelope(data, part[0])
 
             except Exception as e:
-                print(f"Error processing part {part["part_name"]}: {e}")
                 continue
 
         return success(True, "Envelope data fetched and save successfully", None)
