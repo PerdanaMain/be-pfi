@@ -51,10 +51,18 @@ def search():
         return bad_request(False, f"Internal Server Error: {e}", None)
 
 
-def show():
+def show(id):
     try:
-        id = request.args.get("id", default="", type=str)
+        equipment = get_equipment(id)
+        equipment = equipment["equipments"]
+        sub_system = get_parent_equipments(equipment["parent_id"])
+        equipment["sub_system"] = sub_system
+        system = get_parent_equipments(sub_system["parent_id"])
+        equipment["system"] = system
 
+        return success(
+            True, "Equipment fetched successfully", {"equipments": equipment}
+        )
     except Exception as e:
         return bad_request(False, f"Internal Server Error: {e}", None)
 
