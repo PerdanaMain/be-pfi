@@ -78,9 +78,9 @@ def get_all_parts():
                 pf.created_at,
                 pf.updated_at
             FROM pf_parts pf
-            JOIN ms_equipment_master mem ON mem.id = pf.equipment_id
-            JOIN pf_details pd ON pd.part_id = pf.id
-            JOIN dl_ms_type dmt ON dmt.id = pf.type_id
+            LEFT JOIN ms_equipment_master mem ON mem.id = pf.equipment_id
+            LEFT JOIN pf_details pd ON pd.part_id = pf.id
+            LEFT JOIN dl_ms_type dmt ON dmt.id = pf.type_id
             ORDER by pf.updated_at desc;
         """
         cursor.execute(sql)
