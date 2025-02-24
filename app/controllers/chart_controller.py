@@ -21,6 +21,20 @@ def calculate_time_difference(time_failure_str, date_time_str):
 
     return days_diff
 
+def calculate_time_difference_to_hours(time_failure_str, date_time_str):
+    if isinstance(time_failure_str, datetime) and isinstance(date_time_str, datetime):
+        time_failure = time_failure_str
+        date_time = date_time_str
+    else:
+        time_failure = datetime.strptime(time_failure_str, "%a, %d %b %Y %H:%M:%S GMT")
+        date_time = datetime.strptime(date_time_str, "%a, %d %b %Y %H:%M:%S GMT")
+
+    time_diff = time_failure - date_time
+    hours_diff = time_diff.total_seconds() / 3600
+    hours_diff = round(hours_diff)
+
+    return hours_diff
+
 
 def information_chart():
     try:
@@ -40,9 +54,18 @@ def information_chart():
             if current_value["values"][0]["predict_status"] == "predicted failed"
             else None
         )
+        
+        failure_hours = calculate_time_difference_to_hours(
+            current_value["values"][0]["time_failure"],
+            current_value["values"][0]["date_time"],
+        ) if current_value["values"][0]["predict_status"] == "predicted failed" else None
 
         oh_schedules = get_oh_schedule_by_year(year=datetime.now().year)
         oh_start = calculate_time_difference(
+            oh_schedules["oh_schedules"]["start"],
+            now,
+        )
+        oh_start_hours = calculate_time_difference_to_hours(
             oh_schedules["oh_schedules"]["start"],
             now,
         )
@@ -70,6 +93,13 @@ def information_chart():
                 "name": "current value",
                 "value": round(current_value["values"][0]["value"], 4),
                 "satuan": part["part"]["unit"],
+            },
+        )
+        informations.append(
+            {
+                "name": "failure hours",
+                "value": failure_hours if failure_hours is not None else oh_start_hours,
+                "satuan": "hours",
             },
         )
         return success(
