@@ -67,6 +67,7 @@ def get_all_parts():
         sql = """
             SELECT 
                 mem.name,
+                mem.location_tag as equipment_tag,
                 pf.id as id,
                 pf.part_name,
                 pf.location_tag,
