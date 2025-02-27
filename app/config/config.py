@@ -24,3 +24,7 @@ class Config:
     DB_PASS = os.getenv("DB_PASS")
     DB_NAME = os.getenv("DB_NAME")
     DB_PORT = os.getenv("DB_PORT")
+
+    ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg"}
+    UPLOAD_FOLDER = "public/uploads/equipments"
+    MAX_CONTENT_LENGTH = 1 * 1024 * 1024

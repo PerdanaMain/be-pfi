@@ -127,7 +127,7 @@ def get_equipments_for_admin(
                 mem.*
             FROM ms_equipment_master_backup mem
             WHERE equipment_tree_id = %s 
-            ORDER BY name ASC
+            ORDER BY name ASC, mem.updated_at DESC
             LIMIT %s OFFSET %s
         """
 
