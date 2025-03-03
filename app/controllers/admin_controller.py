@@ -64,7 +64,7 @@ def show(id):
             # Remove trailing slash from host if present
             host = host.rstrip("/")
             equipment["image_url"] = (
-                f"{host}/uploads/equipments/{equipment['image_name']}"
+                f"{host}/{Config.STATIC_FOLDER}/{equipment['image_name']}"
             )
         else:
             equipment["image_url"] = None

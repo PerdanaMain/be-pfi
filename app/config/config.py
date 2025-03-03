@@ -26,5 +26,6 @@ class Config:
     DB_PORT = os.getenv("DB_PORT")
 
     ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg"}
-    UPLOAD_FOLDER = "public/uploads/equipments"
+    UPLOAD_FOLDER = "app/static/uploads/equipments"
+    STATIC_FOLDER = "static/uploads/equipments"
     MAX_CONTENT_LENGTH = 1 * 1024 * 1024

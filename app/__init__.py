@@ -7,23 +7,21 @@ load_dotenv()
 
 # Define upload folder path inside public
 UPLOAD_FOLDER = "uploads"
-STATIC_FOLDER = "public/uploads"
+STATIC_FOLDER = "static"
 
 app = Flask(__name__, static_folder=STATIC_FOLDER)
 
-# Create uploads directory inside the public folder
-os.makedirs(os.path.join(STATIC_FOLDER, UPLOAD_FOLDER), exist_ok=True)
 
 # This should represent the path where files get saved during upload
-app.config["UPLOAD_FOLDER"] = os.path.join(STATIC_FOLDER, UPLOAD_FOLDER)
+app.config["UPLOAD_FOLDER"] = os.path.join(STATIC_FOLDER)
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB limit
 
 CORS(app)
 
 
-@app.route("/public/uploads/equipment/<path:filename>")
+@app.route("/static/uploads/equipments/<path:filename>")
 def uploaded_file(filename):
-    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+    return send_from_directory("static/uploads/equipments/", filename)
 
 
 prefix = "/api/v1"
