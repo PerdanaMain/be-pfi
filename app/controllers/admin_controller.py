@@ -52,7 +52,7 @@ def show(id):
     try:
         host = request.host_url
 
-        equipment = get_equipment(id)
+        equipment = get_equipment_for_admin(id)
         equipment = equipment["equipments"]
         sub_system = get_parent_equipments(equipment["parent_id"])
         equipment["sub_system"] = sub_system

@@ -320,6 +320,34 @@ def get_equipments_by_tree_id(equipment_tree_id, page=1, limit=10):
         raise Exception(f"Error fetching equipments: {e}")
 
 
+def get_equipment_for_admin(id):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        sql = "SELECT * FROM ms_equipment_master WHERE id = %s"
+        cursor.execute(sql, (id,))
+
+        columns = [col[0] for col in cursor.description]
+        equipment = cursor.fetchone()
+
+        cursor.close()
+
+        result = []
+
+        tree_id = equipment[columns.index("equipment_tree_id")]
+        tree_data = get_eq_tree_by_id(tree_id)
+
+        parent_data = equipment_resource(equipment, columns)
+        parent_data["equipment_tree"] = tree_data if tree_data else None
+        result.append(parent_data)
+
+        return {"equipments": result[0]} if result else None
+
+    except Exception as e:
+        raise Exception(f"Error fetching equipment: {e}")
+
+
 def get_equipment(id):
     try:
         conn = get_connection()
