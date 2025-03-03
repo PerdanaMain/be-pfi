@@ -50,12 +50,24 @@ def search():
 
 def show(id):
     try:
+        host = request.host_url
+
         equipment = get_equipment(id)
         equipment = equipment["equipments"]
         sub_system = get_parent_equipments(equipment["parent_id"])
         equipment["sub_system"] = sub_system
         system = get_parent_equipments(sub_system["parent_id"])
         equipment["system"] = system
+
+        # Construct the image URL - This assumes uploads is inside the public folder
+        if equipment["image_name"]:
+            # Remove trailing slash from host if present
+            host = host.rstrip("/")
+            equipment["image_url"] = (
+                f"{host}/uploads/equipments/{equipment['image_name']}"
+            )
+        else:
+            equipment["image_url"] = None
 
         return success(
             True, "Equipment fetched successfully", {"equipments": equipment}
@@ -71,6 +83,7 @@ def update(id):
         assetnum = request.form.get("assetnum", default="", type=str)
         location_tag = request.form.get("location_tag", default="", type=str)
         system_tag = request.form.get("system_tag", default="", type=str)
+        name = request.form.get("name", default="", type=str)
 
         equipment = get_equipment(id)
 
@@ -78,9 +91,11 @@ def update(id):
             image = request.files["image"]
 
             # delete old image
-            if equipment["equipments"]["image"]:
+            if equipment["equipments"]["image_name"]:
                 os.remove(
-                    os.path.join(Config.UPLOAD_FOLDER, equipment["equipments"]["image"])
+                    os.path.join(
+                        Config.UPLOAD_FOLDER, equipment["equipments"]["image_name"]
+                    )
                 )
 
             if image.filename == "":
@@ -89,13 +104,20 @@ def update(id):
             if image and allowed_file(image.filename):
                 ext = image.filename.rsplit(".", 1)[1].lower()
                 image_name = f"{uuid.uuid4().hex}.{ext}"
-                # fpath = os.path.join(Config.UPLOAD_FOLDER, image_name)
-                # image.save(fpath)
+                fpath = os.path.join(Config.UPLOAD_FOLDER, image_name)
+                image.save(fpath)
 
             else:
                 return bad_request(False, "Invalid image type", None)
 
-        # update_equipment(id, assetnum, location_tag, system_tag, image_name)
+        data = {
+            "name": name,
+            "assetnum": assetnum,
+            "location_tag": location_tag,
+            "system_tag": system_tag,
+            "image_name": image_name,
+        }
+        update_equipment_for_admin(id=id, data=data)
 
         return success(True, "Equipment updated successfully", image_name)
 

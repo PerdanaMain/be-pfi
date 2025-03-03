@@ -125,7 +125,7 @@ def get_equipments_for_admin(
         sql = """
             SELECT 
                 mem.*
-            FROM ms_equipment_master_backup mem
+            FROM ms_equipment_master mem
             WHERE equipment_tree_id = %s 
             ORDER BY name ASC, mem.updated_at DESC
             LIMIT %s OFFSET %s
@@ -148,6 +148,35 @@ def get_equipments_for_admin(
         }
     except Exception as e:
         raise Exception(f"Error fetching equipments: {e}")
+
+
+def update_equipment_for_admin(id, data):
+    try:
+        # Data persiapan
+        timestamp = datetime.now(pytz.timezone("Asia/Jakarta")).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
+        data["updated_at"] = timestamp
+        data["id"] = str(id)
+
+        sql = """
+            UPDATE ms_equipment_master
+            SET name = %(name)s,
+                assetnum = %(assetnum)s,
+                location_tag = %(location_tag)s,
+                system_tag = %(system_tag)s,
+                updated_at = %(updated_at)s,
+                image_name = %(image_name)s
+            WHERE id = %(id)s
+        """
+
+        with get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(sql, data)
+                conn.commit()
+
+    except Exception as e:
+        raise Exception(f"Error updating equipment: {e}")
 
 
 def search_equipment(name, tree="53325b34-3f97-4f37-95cc-4a32b9de92de"):
