@@ -72,7 +72,7 @@ def information_chart():
                 "value": failure_hours,
                 "satuan": "Hours",
                 "detail": {
-                    "date": failure_date.strftime("%A, %d %B %Y %H:%M:%S"),
+                    "date": failure_date.strftime("%d %B %Y"),  # Updated format
                     "hours": failure_hours,
                 },
             },

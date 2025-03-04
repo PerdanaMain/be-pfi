@@ -52,7 +52,7 @@ def show(id):
     try:
         host = request.host_url
 
-        equipment = get_equipment_for_admin(id)
+        equipment = get_equipment(id)
         equipment = equipment["equipments"]
         sub_system = get_parent_equipments(equipment["parent_id"])
         equipment["sub_system"] = sub_system
@@ -64,7 +64,7 @@ def show(id):
             # Remove trailing slash from host if present
             host = host.rstrip("/")
             equipment["image_url"] = (
-                f"{host}/{Config.STATIC_FOLDER}/{equipment['image_name']}"
+                f"{host}/uploads/equipments/{equipment['image_name']}"
             )
         else:
             equipment["image_url"] = None
