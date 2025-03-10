@@ -52,7 +52,7 @@ def show(id):
     try:
         host = request.host_url
 
-        equipment = get_equipment(id)
+        equipment = get_equipment_for_admin(id)
         equipment = equipment["equipments"]
         sub_system = get_parent_equipments(equipment["parent_id"])
         equipment["sub_system"] = sub_system
@@ -84,6 +84,7 @@ def update(id):
         location_tag = request.form.get("location_tag", default="", type=str)
         system_tag = request.form.get("system_tag", default="", type=str)
         name = request.form.get("name", default="", type=str)
+        description = request.form.get("description", default="", type=str)
 
         equipment = get_equipment(id)
 
@@ -116,6 +117,7 @@ def update(id):
             "location_tag": location_tag,
             "system_tag": system_tag,
             "image_name": image_name,
+            "description": description,
         }
         update_equipment_for_admin(id=id, data=data)
 

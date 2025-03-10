@@ -166,7 +166,8 @@ def update_equipment_for_admin(id, data):
                 location_tag = %(location_tag)s,
                 system_tag = %(system_tag)s,
                 updated_at = %(updated_at)s,
-                image_name = %(image_name)s
+                image_name = %(image_name)s,
+                description = %(description)s
             WHERE id = %(id)s
         """
 
