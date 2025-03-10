@@ -11,7 +11,9 @@ def get_oh_schedule_by_year(year):
         SELECT 
             id, start, finish, year
         FROM rp_oh_schedule
-        WHERE year = %s
+        WHERE year >= %s
+        ORDER BY year ASC
+        LIMIT 1
         """
         cursor.execute(sql, (year,))
         columns = [col[0] for col in cursor.description]
