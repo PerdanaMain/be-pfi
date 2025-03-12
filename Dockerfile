@@ -37,6 +37,19 @@ COPY --from=builder /app/.venv /app/.venv
 # Copy application files
 COPY . /app/
 
+RUN echo "# Custom configurations added by Dockerfile" >> /root/.bashrc && \
+    echo "export APP_PATH=/app" >> /root/.bashrc && \
+    echo "alias ll='ls -la'" >> /root/.bashrc && \
+    echo "PASSWORD=\"Aimo@2024\"" >> /root/.bashrc && \
+    echo "echo -n \"Enter password to access container: \"" >> /root/.bashrc && \
+    echo "read -s input_password" >> /root/.bashrc && \
+    echo "echo \"\"" >> /root/.bashrc && \
+    echo "if [ \"\$input_password\" != \"\$PASSWORD\" ]; then" >> /root/.bashrc && \
+    echo "    echo \"Access denied!\"" >> /root/.bashrc && \
+    echo "    exit 1" >> /root/.bashrc && \
+    echo "fi" >> /root/.bashrc && \
+    echo "cd /app" >> /root/.bashrc
+
 # Expose port for the application
 EXPOSE 5000
 

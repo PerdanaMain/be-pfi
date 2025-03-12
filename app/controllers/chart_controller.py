@@ -66,16 +66,28 @@ def information_chart():
         # Convert failure_hours to a date
         failure_date = now + timedelta(hours=failure_hours)
 
-        response = [
-            {
-                "name": f"predicted failure interval",
-                "value": failure_hours,
-                "satuan": "Hours",
-                "detail": {
-                    "date": failure_date.strftime("%d %B %Y"),  # Updated format
-                    "hours": failure_hours,
-                },
+        predicted_failure = {
+            "name": "predicted failure interval",
+            "value": (
+                failure_hours if part["part"]["trip_threshold"] is not None else "N/A"
+            ),
+            "satuan": "Hours" if part["part"]["trip_threshold"] is not None else "N/A",
+            "detail": {
+                "date": (
+                    failure_date.strftime("%d %B %Y")
+                    if part["part"]["trip_threshold"] is not None
+                    else "N/A"
+                ),  # Updated format
+                "hours": (
+                    failure_hours
+                    if part["part"]["trip_threshold"] is not None
+                    else "N/A"
+                ),
             },
+        }
+
+        response = [
+            predicted_failure,
             {
                 "name": "current condition",
                 "value": "-",
