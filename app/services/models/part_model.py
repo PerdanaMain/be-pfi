@@ -200,6 +200,109 @@ def get_report_parts():
         raise e
 
 
+def get_filtered_report_parts(eq_id, unit_id, sensor_type):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        # Base SQL query
+        sql = """
+            WITH rp_oh_schedule AS (
+                SELECT *
+                FROM rp_oh_schedule
+                WHERE year = '2025'
+            )
+            SELECT 
+                ms_equipment_master.id as equipment_id,
+                ms_equipment_master.name as equipmentName,
+                ms_equipment_master.location_tag as equipmentTag,
+                ms_equipment_master.parent_id as parent_id,
+                pf_parts.id,
+                pf_parts.equipment_id, 
+                pf_parts.part_name as sensorName,
+                pf_parts.type_id,
+                pf_parts.web_id,
+                pf_parts.location_tag as sensorTag,
+                pf_details.upper_threshold as tripThreshold,
+                pf_details.lower_threshold as alarmThreshold,
+                pf_details.time_failure as PFInterval,
+                pf_details.predict_status as status,
+                dl_ms_type.unit as unit,
+                dl_features_data.value as currentValue,
+                dl_features_data.date_time as currentValueDate,
+                rp_oh_schedule.start as wostart,
+                rp_oh_schedule.finish as wofinish,
+                rp_oh_schedule.year as woyear
+            FROM pf_parts
+            JOIN pf_details ON pf_details.part_id = pf_parts.id
+            JOIN ms_equipment_master ON ms_equipment_master.id = pf_parts.equipment_id
+            JOIN dl_ms_type ON dl_ms_type.id = pf_parts.type_id
+            JOIN (
+                SELECT DISTINCT ON (part_id) 
+                    part_id, value, date_time
+                FROM dl_features_data
+                ORDER BY part_id, date_time DESC
+            ) dl_features_data ON dl_features_data.part_id = pf_parts.id
+            CROSS JOIN rp_oh_schedule
+            WHERE 1=1
+        """
+
+        # Add filter conditions
+        params = []
+
+        if eq_id:
+            sql += " AND ms_equipment_master.id = %s"
+            params.append(eq_id)
+
+        if unit_id:
+            sql += " AND dl_ms_type.id = %s"
+            params.append(unit_id)
+
+        if sensor_type:
+            if sensor_type == "DCS":
+                sql += " AND pf_parts.web_id IS NOT NULL"
+            else:
+                sql += " AND pf_parts.web_id IS NULL"
+
+        # Complete the SQL query
+        sql += """
+            GROUP BY 
+                ms_equipment_master.id,
+                ms_equipment_master.name,
+                ms_equipment_master.location_tag,
+                pf_parts.id,
+                pf_parts.equipment_id,
+                pf_parts.part_name,
+                pf_parts.type_id,
+                pf_parts.location_tag,
+                pf_details.upper_threshold,
+                pf_details.lower_threshold,
+                pf_details.time_failure,
+                pf_details.predict_status,
+                dl_ms_type.unit,
+                dl_features_data.value,
+                dl_features_data.date_time,
+                rp_oh_schedule.start,
+                rp_oh_schedule.finish,
+                rp_oh_schedule.year
+            ORDER BY ms_equipment_master.name asc;
+        """
+
+        # Execute the query with parameters
+        cursor.execute(sql, params)
+
+        columns = [col[0] for col in cursor.description]
+        parts = cursor.fetchall()
+
+        result = [dict(zip(columns, row)) for row in parts] if parts else None
+
+        cursor.close()
+
+        return result if result else None
+    except Exception as e:
+        raise e
+
+
 def get_parts_by_equpment_id_with_detail(equipment_id):
     try:
 

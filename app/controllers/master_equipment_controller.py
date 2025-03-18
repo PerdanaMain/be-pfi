@@ -52,6 +52,39 @@ def report_equipments():
         return bad_request(False, f"Internal Server Error: {e}", None)
 
 
+def filtered_report_equipments():
+    try:
+        equipment_id = request.args.get("equipment_id", type=str)
+        unit_id = request.args.get("unit_id", type=str)
+        sensor_type = request.args.get("sensorType", type=str)
+
+        # Check if required parameters are present
+        if not equipment_id and not unit_id and not sensor_type:
+            return bad_request(False, "Missing required parameters", None)
+
+        if equipment_id == "all":
+            equipment_id = None
+        if unit_id == "all":
+            unit_id = None
+        if sensor_type == "all":
+            sensor_type = None
+
+        parts = get_filtered_report_parts(equipment_id, unit_id, sensor_type)
+
+        return success(
+            True,
+            "Report fetched successfully",
+            {
+                "parts": parts,
+                "equipment_id": equipment_id,
+                "unit_id": unit_id,
+                "sensor_type": sensor_type,
+            },
+        )
+    except Exception as e:
+        return bad_request(False, f"Internal Server Error: {e}", None)
+
+
 def create():
     try:
         req = request.get_json()
