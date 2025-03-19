@@ -71,16 +71,7 @@ def filtered_report_equipments():
 
         parts = get_filtered_report_parts(equipment_id, unit_id, sensor_type)
 
-        return success(
-            True,
-            "Report fetched successfully",
-            {
-                "parts": parts,
-                "equipment_id": equipment_id,
-                "unit_id": unit_id,
-                "sensor_type": sensor_type,
-            },
-        )
+        return success(True, "Report fetched successfully", parts)
     except Exception as e:
         return bad_request(False, f"Internal Server Error: {e}", None)
 
