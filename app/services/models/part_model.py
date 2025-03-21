@@ -270,6 +270,7 @@ def get_filtered_report_parts(eq_id, unit_id, sensor_type):
                 ms_equipment_master.id,
                 ms_equipment_master.name,
                 ms_equipment_master.location_tag,
+                ms_equipment_master.parent_id,
                 pf_parts.id,
                 pf_parts.equipment_id,
                 pf_parts.part_name,
