@@ -275,6 +275,7 @@ def get_filtered_report_parts(eq_id, unit_id, sensor_type):
                 pf_parts.equipment_id,
                 pf_parts.part_name,
                 pf_parts.type_id,
+                pf_parts.web_id,
                 pf_parts.location_tag,
                 pf_details.upper_threshold,
                 pf_details.lower_threshold,
@@ -288,6 +289,8 @@ def get_filtered_report_parts(eq_id, unit_id, sensor_type):
                 rp_oh_schedule.year
             ORDER BY ms_equipment_master.name asc;
         """
+
+        print(sql)
 
         # Execute the query with parameters
         cursor.execute(sql, params)
