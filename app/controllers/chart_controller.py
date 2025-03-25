@@ -51,7 +51,7 @@ def information_chart():
                 current_value["values"][0]["time_failure"],
                 current_value["values"][0]["date_time"],
             )
-            if current_value["values"][0]["predict_status"] is "predicted failed"
+            if current_value["values"][0]["predict_status"] == "predicted failed"
             else None
         )
 
