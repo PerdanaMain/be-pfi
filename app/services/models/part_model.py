@@ -200,18 +200,25 @@ def get_report_parts():
         raise e
 
 
-def get_filtered_report_parts(eq_id, unit_id, sensor_type):
+def get_filtered_report_parts(eq_id, sensor_type, oh_schedules):
     try:
         conn = get_connection()
         cursor = conn.cursor()
+
+        # Add filter conditions
+        params = []
 
         # Base SQL query
         sql = """
             WITH rp_oh_schedule AS (
                 SELECT *
                 FROM rp_oh_schedule
-                WHERE year = '2025'
+                WHERE year = %s
             )
+        """
+        params.append(oh_schedules["oh_schedules"]["year"])
+
+        sql += """
             SELECT 
                 ms_equipment_master.id as equipment_id,
                 ms_equipment_master.name as equipmentName,
@@ -247,16 +254,9 @@ def get_filtered_report_parts(eq_id, unit_id, sensor_type):
             WHERE 1=1
         """
 
-        # Add filter conditions
-        params = []
-
         if eq_id:
             sql += " AND ms_equipment_master.id = %s"
             params.append(eq_id)
-
-        if unit_id:
-            sql += " AND dl_ms_type.id = %s"
-            params.append(unit_id)
 
         if sensor_type:
             if sensor_type == "DCS":

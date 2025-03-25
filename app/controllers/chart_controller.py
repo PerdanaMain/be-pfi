@@ -51,7 +51,7 @@ def information_chart():
                 current_value["values"][0]["time_failure"],
                 current_value["values"][0]["date_time"],
             )
-            if current_value["values"][0]["predict_status"] == "predicted failed"
+            if current_value["values"][0]["predict_status"] is "predicted failed"
             else None
         )
 
@@ -62,6 +62,7 @@ def information_chart():
             now,
         )
         failure_hours = failure_hours if failure_hours is not None else oh_start_hours
+        is_oh_hours = True if failure_hours is not None else False
 
         # Convert failure_hours to a date
         failure_date = now + timedelta(hours=failure_hours)
@@ -83,6 +84,7 @@ def information_chart():
                     if part["part"]["trip_threshold"] is not None
                     else "N/A"
                 ),
+                "is_oh_hours": is_oh_hours,
             },
         }
 
